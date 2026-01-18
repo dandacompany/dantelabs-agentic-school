@@ -1,0 +1,109 @@
+# ======================
+# Git
+# ======================
+.git/
+.gitignore
+.gitattributes
+
+# ======================
+# IDE / Editor
+# ======================
+.vscode/
+.idea/
+.opencode/
+.history/
+*.swp
+*.swo
+*~
+
+# ======================
+# OS
+# ======================
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+desktop.ini
+
+# ======================
+# Environment
+# ======================
+.env
+.env.*
+
+# ======================
+# Development
+# ======================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# ======================
+# Test & Coverage
+# ======================
+test/
+tests/
+__tests__/
+*.test.js
+*.spec.js
+coverage/
+.nyc_output/
+*.lcov
+cli/tests/
+
+# ======================
+# Documentation (not needed in package)
+# ======================
+docs/
+CONTRIBUTING.md
+CHANGELOG.md
+SECURITY.md
+CODE_OF_CONDUCT.md
+
+# ======================
+# CI/CD
+# ======================
+.github/
+.gitlab-ci.yml
+.travis.yml
+.circleci/
+Jenkinsfile
+azure-pipelines.yml
+
+# ======================
+# Build tools
+# ======================
+Makefile
+Dockerfile
+docker-compose*.yml
+.dockerignore
+
+# ======================
+# Lint & Config
+# ======================
+.eslintrc*
+.prettierrc*
+.editorconfig
+.stylelintrc*
+tsconfig.json
+jsconfig.json
+
+# ======================
+# Generated / Cache
+# ======================
+CLAUDE.md
+AGENTS.md
+.dantelabs-cache.json
+*.log
+logs/
+tmp/
+temp/
+
+# ======================
+# Examples (if any)
+# ======================
+examples/

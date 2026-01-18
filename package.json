@@ -1,0 +1,57 @@
+{
+  "name": "dantelabs-agentic-school",
+  "version": "1.0.0",
+  "description": "CLI tool for installing Dante Labs agentic plugins for Claude Code",
+  "main": "cli/src/index.js",
+  "type": "module",
+  "bin": {
+    "dantelabs": "./cli/bin/cli.js",
+    "dlas": "./cli/bin/cli.js"
+  },
+  "scripts": {
+    "start": "node cli/bin/cli.js",
+    "test": "node --test cli/tests/",
+    "lint": "eslint cli/"
+  },
+  "keywords": [
+    "claude-code",
+    "plugins",
+    "agentic",
+    "marketing",
+    "automation",
+    "dante-labs",
+    "ai-agents"
+  ],
+  "author": {
+    "name": "Dante Labs",
+    "email": "datapod.k@gmail.com",
+    "url": "https://dante-datalab.com"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dandacompany/dantelabs-agentic-school"
+  },
+  "homepage": "https://github.com/dandacompany/dantelabs-agentic-school#readme",
+  "bugs": {
+    "url": "https://github.com/dandacompany/dantelabs-agentic-school/issues"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "files": [
+    "cli/",
+    "plugins/",
+    ".claude-plugin/"
+  ],
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "commander": "^12.0.0",
+    "fs-extra": "^11.2.0",
+    "inquirer": "^9.2.0",
+    "ora": "^8.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.56.0"
+  }
+}
