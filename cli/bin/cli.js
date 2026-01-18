@@ -6,6 +6,7 @@ import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { readFileSync } from 'fs';
 
+import { setLocale, t, getAvailableLocales } from '../src/i18n/index.js';
 import installCommand from '../src/commands/install.js';
 import listCommand from '../src/commands/list.js';
 import infoCommand from '../src/commands/info.js';
@@ -19,30 +20,52 @@ const pkg = JSON.parse(
   readFileSync(join(__dirname, '../../package.json'), 'utf8')
 );
 
+// Pre-parse --lang option before commander
+const langIndex = process.argv.findIndex(
+  (arg) => arg === '--lang' || arg === '-l'
+);
+if (langIndex !== -1 && process.argv[langIndex + 1]) {
+  setLocale(process.argv[langIndex + 1]);
+}
+
 const program = new Command();
 
 program
   .name('dantelabs')
-  .description('Dante Labs Agentic School - Claude Code Plugin Installer')
+  .description(t('cli.description'))
   .version(pkg.version)
+  .option(
+    '-l, --lang <locale>',
+    `Language (${getAvailableLocales().join(', ')})`,
+    'en'
+  )
+  .hook('preAction', (thisCommand) => {
+    const opts = thisCommand.opts();
+    if (opts.lang) {
+      setLocale(opts.lang);
+    }
+  })
   .addHelpText('after', `
-${chalk.bold('Examples:')}
-  ${chalk.gray('# Install all plugins')}
+${chalk.bold(t('cli.examples'))}
+  ${chalk.gray(t('cli.installAllPlugins'))}
   $ npx dantelabs-agentic-school install
 
-  ${chalk.gray('# Install specific plugin')}
+  ${chalk.gray(t('cli.installSpecificPlugin'))}
   $ npx dantelabs-agentic-school install brand-analytics
 
-  ${chalk.gray('# Install to custom path')}
+  ${chalk.gray(t('cli.installCustomPath'))}
   $ npx dantelabs-agentic-school install --path ./my-project
 
-  ${chalk.gray('# List available plugins')}
+  ${chalk.gray(t('cli.listPlugins'))}
   $ npx dantelabs-agentic-school list
 
-  ${chalk.gray('# Show plugin info')}
+  ${chalk.gray(t('cli.showPluginInfo'))}
   $ npx dantelabs-agentic-school info brand-analytics
 
-${chalk.bold('More info:')} https://github.com/dandacompany/dantelabs-agentic-school
+  ${chalk.gray('# Korean language')}
+  $ npx dantelabs-agentic-school --lang ko list
+
+${chalk.bold(t('cli.moreInfo'))}: https://github.com/dandacompany/dantelabs-agentic-school
   `);
 
 // Register commands

@@ -1,14 +1,15 @@
 import chalk from 'chalk';
 import { getMarketplaceConfig } from '../lib/config.js';
 import logger from '../utils/logger.js';
+import { t } from '../i18n/index.js';
 
 export default function listCommand(program) {
   program
     .command('list')
     .alias('ls')
-    .description('List all available plugins')
-    .option('--json', 'Output as JSON')
-    .option('-v, --verbose', 'Show detailed information')
+    .description(t('list.description'))
+    .option('--json', t('list.optionJson'))
+    .option('-v, --verbose', t('list.optionVerbose'))
     .action(async (options) => {
       try {
         const config = await getMarketplaceConfig();
@@ -19,7 +20,7 @@ export default function listCommand(program) {
         }
 
         console.log();
-        console.log(chalk.bold.blue('Dante Labs Agentic School - Available Plugins'));
+        console.log(chalk.bold.blue(t('list.title')));
         console.log(chalk.gray('━'.repeat(60)));
         console.log();
 
@@ -34,22 +35,22 @@ export default function listCommand(program) {
             const components = plugin.components || {};
             if (components.agents?.length) {
               console.log(
-                chalk.gray(`  Agents: ${components.agents.join(', ')}`)
+                chalk.gray(`  ${t('common.agents')}: ${components.agents.join(', ')}`)
               );
             }
             if (components.commands?.length) {
               console.log(
-                chalk.gray(`  Commands: /${components.commands.join(', /')}`)
+                chalk.gray(`  ${t('common.commands')}: /${components.commands.join(', /')}`)
               );
             }
             if (components.skills?.length) {
               console.log(
-                chalk.gray(`  Skills: ${components.skills.join(', ')}`)
+                chalk.gray(`  ${t('common.skills')}: ${components.skills.join(', ')}`)
               );
             }
             if (plugin.externalSkills?.length) {
               console.log(
-                chalk.yellow(`  External: ${plugin.externalSkills.join(', ')}`)
+                chalk.yellow(`  ${t('common.external')}: ${plugin.externalSkills.join(', ')}`)
               );
             }
           }
@@ -73,16 +74,16 @@ export default function listCommand(program) {
 
         console.log(chalk.gray('━'.repeat(60)));
         console.log(
-          chalk.bold('Summary:'),
-          `${config.plugins.length} plugins,`,
-          `${totalAgents} agents,`,
-          `${totalCommands} commands,`,
-          `${totalSkills} skills`
+          chalk.bold(`${t('common.summary')}:`),
+          t('list.summaryText', {
+            plugins: config.plugins.length,
+            agents: totalAgents,
+            commands: totalCommands,
+            skills: totalSkills
+          })
         );
         console.log();
-        console.log(
-          chalk.gray(`Install: npx dantelabs-agentic-school install [plugin-name]`)
-        );
+        console.log(chalk.gray(t('list.installHint')));
       } catch (error) {
         logger.error(error.message);
         process.exit(1);

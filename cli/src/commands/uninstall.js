@@ -8,14 +8,15 @@ import { getMarketplaceConfig } from '../lib/config.js';
 import { uninstallPlugin } from '../lib/installer.js';
 import logger from '../utils/logger.js';
 import { resolvePath } from '../utils/fs-utils.js';
+import { t } from '../i18n/index.js';
 
 export default function uninstallCommand(program) {
   program
     .command('uninstall <plugin>')
     .alias('rm')
-    .description('Uninstall a plugin from your project')
-    .option('-p, --path <path>', 'Project path (default: current directory)')
-    .option('-y, --yes', 'Skip confirmation prompt')
+    .description(t('uninstall.description'))
+    .option('-p, --path <path>', t('uninstall.optionPath'))
+    .option('-y, --yes', t('uninstall.optionYes'))
     .action(async (pluginName, options) => {
       const spinner = ora();
 
@@ -28,12 +29,12 @@ export default function uninstallCommand(program) {
 
         // Check if .claude directory exists
         if (!existsSync(claudeDir)) {
-          logger.error(`No .claude directory found at ${targetPath}`);
+          logger.error(t('uninstall.noClaudeDir', { path: targetPath }));
           process.exit(1);
         }
 
         // Load marketplace config to get plugin info
-        spinner.start('Loading plugin registry...');
+        spinner.start(t('uninstall.loadingRegistry'));
         const config = await getMarketplaceConfig();
         spinner.stop();
 
@@ -41,9 +42,9 @@ export default function uninstallCommand(program) {
         const plugin = config.plugins.find((p) => p.name === pluginName);
 
         if (!plugin) {
-          logger.error(`Plugin '${pluginName}' not found in registry`);
+          logger.error(t('uninstall.pluginNotFound', { name: pluginName }));
           console.log();
-          console.log('Available plugins:');
+          console.log(`${t('common.availablePlugins')}:`);
           config.plugins.forEach((p) => {
             console.log(`  - ${chalk.cyan(p.name)}`);
           });
@@ -52,22 +53,24 @@ export default function uninstallCommand(program) {
 
         // Show what will be removed
         console.log();
-        console.log(chalk.bold(`Will remove ${chalk.cyan(plugin.name)}:`));
+        console.log(
+          chalk.bold(t('uninstall.willRemove', { name: chalk.cyan(plugin.name) }))
+        );
         const components = plugin.components || {};
 
         if (components.agents?.length) {
           console.log(
-            chalk.gray(`  Agents: ${components.agents.join(', ')}`)
+            chalk.gray(`  ${t('common.agents')}: ${components.agents.join(', ')}`)
           );
         }
         if (components.commands?.length) {
           console.log(
-            chalk.gray(`  Commands: /${components.commands.join(', /')}`)
+            chalk.gray(`  ${t('common.commands')}: /${components.commands.join(', /')}`)
           );
         }
         if (components.skills?.length) {
           console.log(
-            chalk.gray(`  Skills: ${components.skills.join(', ')}`)
+            chalk.gray(`  ${t('common.skills')}: ${components.skills.join(', ')}`)
           );
         }
         console.log();
@@ -78,29 +81,33 @@ export default function uninstallCommand(program) {
             {
               type: 'confirm',
               name: 'confirm',
-              message: `Are you sure you want to uninstall ${plugin.name}?`,
+              message: t('uninstall.confirmUninstall', { name: plugin.name }),
               default: false
             }
           ]);
 
           if (!confirm) {
-            logger.info('Uninstall cancelled');
+            logger.info(t('uninstall.uninstallCancelled'));
             return;
           }
         }
 
         // Uninstall
-        spinner.start(`Uninstalling ${chalk.cyan(plugin.name)}...`);
+        spinner.start(t('uninstall.uninstalling', { name: chalk.cyan(plugin.name) }));
 
         const results = await uninstallPlugin(plugin, claudeDir);
 
-        spinner.succeed(`Uninstalled ${chalk.cyan(plugin.name)}`);
+        spinner.succeed(t('uninstall.uninstalled', { name: chalk.cyan(plugin.name) }));
 
         // Summary
         console.log();
         console.log(
           chalk.gray(
-            `Removed: ${results.agents} agents, ${results.commands} commands, ${results.skills} skills`
+            t('uninstall.removedSummary', {
+              agents: results.agents,
+              commands: results.commands,
+              skills: results.skills
+            })
           )
         );
       } catch (error) {

@@ -9,17 +9,18 @@ import { getMarketplaceConfig, getPluginDependencies } from '../lib/config.js';
 import { installPlugin } from '../lib/installer.js';
 import logger from '../utils/logger.js';
 import { resolvePath } from '../utils/fs-utils.js';
+import { t } from '../i18n/index.js';
 
 export default function installCommand(program) {
   program
     .command('install [plugin]')
     .alias('i')
-    .description('Install plugins to your project')
-    .option('-p, --path <path>', 'Installation path (default: current directory)')
-    .option('-f, --force', 'Force overwrite existing files')
-    .option('--all', 'Install all available plugins')
-    .option('--no-common', 'Skip common utilities')
-    .option('--dry-run', 'Show what would be installed without making changes')
+    .description(t('install.description'))
+    .option('-p, --path <path>', t('install.optionPath'))
+    .option('-f, --force', t('install.optionForce'))
+    .option('--all', t('install.optionAll'))
+    .option('--no-common', t('install.optionNoCommon'))
+    .option('--dry-run', t('install.optionDryRun'))
     .action(async (pluginName, options) => {
       const spinner = ora();
 
@@ -30,12 +31,12 @@ export default function installCommand(program) {
           : process.cwd();
         const claudeDir = join(targetPath, '.claude');
 
-        logger.info(`Installation target: ${chalk.cyan(claudeDir)}`);
+        logger.info(`${t('install.installTarget')}: ${chalk.cyan(claudeDir)}`);
 
         // Load marketplace config
-        spinner.start('Loading plugin registry...');
+        spinner.start(t('install.loadingRegistry'));
         const config = await getMarketplaceConfig();
-        spinner.succeed('Plugin registry loaded');
+        spinner.succeed(t('install.registryLoaded'));
 
         // Determine which plugins to install
         let pluginsToInstall = [];
@@ -46,13 +47,15 @@ export default function installCommand(program) {
             {
               type: 'confirm',
               name: 'confirm',
-              message: `Install all ${config.plugins.length} plugins?`,
+              message: t('install.confirmInstallAll', {
+                count: config.plugins.length
+              }),
               default: true
             }
           ]);
 
           if (!confirm) {
-            logger.info('Installation cancelled');
+            logger.info(t('install.installCancelled'));
             return;
           }
 
@@ -62,9 +65,9 @@ export default function installCommand(program) {
           const plugin = config.plugins.find((p) => p.name === pluginName);
 
           if (!plugin) {
-            logger.error(`Plugin '${pluginName}' not found`);
+            logger.error(t('install.pluginNotFound', { name: pluginName }));
             console.log();
-            console.log('Available plugins:');
+            console.log(`${t('common.availablePlugins')}:`);
             config.plugins.forEach((p) => {
               console.log(`  - ${chalk.cyan(p.name)}: ${p.description}`);
             });
@@ -89,7 +92,7 @@ export default function installCommand(program) {
         // Dry run mode
         if (options.dryRun) {
           console.log();
-          logger.info('Dry run - would install:');
+          logger.info(t('install.dryRunTitle'));
           console.log();
 
           for (const plugin of pluginsToInstall) {
@@ -98,23 +101,29 @@ export default function installCommand(program) {
 
             if (components.agents?.length) {
               console.log(
-                chalk.gray(`    Agents: ${components.agents.join(', ')}`)
+                chalk.gray(
+                  `    ${t('common.agents')}: ${components.agents.join(', ')}`
+                )
               );
             }
             if (components.commands?.length) {
               console.log(
-                chalk.gray(`    Commands: /${components.commands.join(', /')}`)
+                chalk.gray(
+                  `    ${t('common.commands')}: /${components.commands.join(', /')}`
+                )
               );
             }
             if (components.skills?.length) {
               console.log(
-                chalk.gray(`    Skills: ${components.skills.join(', ')}`)
+                chalk.gray(
+                  `    ${t('common.skills')}: ${components.skills.join(', ')}`
+                )
               );
             }
             console.log();
           }
 
-          console.log(chalk.gray('Run without --dry-run to install.'));
+          console.log(chalk.gray(t('install.dryRunFooter')));
           return;
         }
 
@@ -129,13 +138,17 @@ export default function installCommand(program) {
         let totalSkills = 0;
 
         for (const plugin of pluginsToInstall) {
-          spinner.start(`Installing ${chalk.cyan(plugin.name)}...`);
+          spinner.start(t('install.installing', { name: chalk.cyan(plugin.name) }));
 
           try {
             const results = await installPlugin(plugin, claudeDir, {
               force: options.force,
               onProgress: (type, name) => {
-                spinner.text = `Installing ${chalk.cyan(plugin.name)}: ${type} ${name}`;
+                spinner.text = t('install.installingComponent', {
+                  plugin: chalk.cyan(plugin.name),
+                  type,
+                  name
+                });
               }
             });
 
@@ -143,9 +156,14 @@ export default function installCommand(program) {
             totalCommands += results.commands;
             totalSkills += results.skills;
 
-            spinner.succeed(`Installed ${chalk.cyan(plugin.name)}`);
+            spinner.succeed(t('install.installed', { name: chalk.cyan(plugin.name) }));
           } catch (err) {
-            spinner.fail(`Failed to install ${plugin.name}: ${err.message}`);
+            spinner.fail(
+              t('install.failedToInstall', {
+                name: plugin.name,
+                error: err.message
+              })
+            );
             if (!options.force) {
               throw err;
             }
@@ -155,21 +173,25 @@ export default function installCommand(program) {
         // Summary
         console.log();
         logger.success(
-          `Successfully installed ${pluginsToInstall.length} plugin(s)`
+          t('install.successMessage', { count: pluginsToInstall.length })
         );
         console.log(
           chalk.gray(
-            `  ${totalAgents} agents, ${totalCommands} commands, ${totalSkills} skills`
+            `  ${t('install.componentSummary', {
+              agents: totalAgents,
+              commands: totalCommands,
+              skills: totalSkills
+            })}`
           )
         );
         console.log();
-        console.log(`Location: ${chalk.cyan(claudeDir)}`);
+        console.log(`${t('common.location')}: ${chalk.cyan(claudeDir)}`);
 
         // Show next steps
         console.log();
-        console.log(chalk.bold('Next steps:'));
+        console.log(chalk.bold(`${t('install.nextSteps')}:`));
         console.log(
-          `  1. Run ${chalk.cyan('claude --help')} to see available commands`
+          `  1. ${t('install.nextStep1', { command: chalk.cyan('claude --help') })}`
         );
 
         // Show example command based on installed plugins
@@ -178,7 +200,9 @@ export default function installCommand(program) {
         );
         if (hasAnalyzeBrand) {
           console.log(
-            `  2. Try ${chalk.cyan('/analyze-brand --brand-doc ./your-brand.md')}`
+            `  2. ${t('install.nextStep2', {
+              command: chalk.cyan('/analyze-brand --brand-doc ./your-brand.md')
+            })}`
           );
         }
 
@@ -189,7 +213,7 @@ export default function installCommand(program) {
 
         if (externalSkills.length > 0) {
           console.log();
-          console.log(chalk.yellow('External skills required:'));
+          console.log(chalk.yellow(`${t('install.externalSkillsRequired')}:`));
           [...new Set(externalSkills)].forEach((skill) => {
             console.log(`  - ${skill}`);
           });

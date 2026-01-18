@@ -14,11 +14,11 @@
   "plugins": [
     {
       "name": "common",
-      "description": "공통 유틸리티 스킬 모음. 인증 관리, 문서 제작 도구(PPTX, PDF, DOCX) 등 여러 플러그인에서 공통으로 사용하는 기능을 제공합니다.",
+      "description": "공통 유틸리티 스킬 모음. 인증 관리, 문서 제작 도구(PPTX, PDF, DOCX), 이미지/비디오 생성(Kie.ai) 등 여러 플러그인에서 공통으로 사용하는 기능을 제공합니다.",
       "version": "1.0.0",
       "path": "plugins/common",
       "components": {
-        "skills": ["auth-manager", "pptx", "pdf", "docx"]
+        "skills": ["auth-manager", "pptx", "pdf", "docx", "kie-image-generator", "kie-video-generator"]
       }
     },
     {
@@ -78,15 +78,14 @@
     },
     {
       "name": "creative-production",
-      "description": "실제 이미지와 비디오를 생성합니다. kie-image-generator, kie-video-generator 스킬과 연동됩니다.",
+      "description": "실제 이미지와 비디오를 생성합니다. common 플러그인의 kie-image-generator, kie-video-generator 스킬을 활용합니다.",
       "version": "1.0.0",
       "path": "plugins/creative-production",
       "components": {
         "agents": ["creative-director", "production-coordinator"],
         "commands": ["create-image", "create-video"],
         "skills": ["image-prompt-guide", "video-production"]
-      },
-      "externalSkills": ["kie-image-generator", "kie-video-generator"]
+      }
     },
     {
       "name": "campaign-orchestration",

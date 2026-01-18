@@ -37,6 +37,7 @@ desktop.ini
 .env
 .env.*
 !.env.example
+**/skills/**/.env
 
 # ======================
 # Node.js
