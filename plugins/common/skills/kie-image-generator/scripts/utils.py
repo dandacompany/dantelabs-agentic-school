@@ -132,7 +132,12 @@ MODELS = {
 
 def load_api_key(skill_dir: Optional[Path] = None) -> str:
     """
-    Load Kie.ai API key from .env file.
+    Load Kie.ai API key from environment variable or .env file.
+
+    Priority order:
+    1. Environment variable KIEAI_API_KEY (set via auth-loader or shell)
+    2. ~/.claude/auth/kiei-api.env (centralized auth management)
+    3. Skill directory .env file (local fallback)
 
     Args:
         skill_dir: Path to skill directory (default: script's parent directory)
@@ -143,19 +148,30 @@ def load_api_key(skill_dir: Optional[Path] = None) -> str:
     Raises:
         ValueError: If API key is not found or invalid
     """
+    # 1. Check if KIEAI_API_KEY is already set in environment
+    api_key = os.getenv('KIEAI_API_KEY', '').strip()
+    if api_key and api_key != 'your_api_key_here':
+        return api_key
+
+    # 2. Try loading from centralized auth directory (~/.claude/auth/)
+    auth_env = Path.home() / '.claude' / 'auth' / 'kiei-api.env'
+    if auth_env.exists():
+        load_dotenv(auth_env)
+        api_key = os.getenv('KIEAI_API_KEY', '').strip()
+        if api_key and api_key != 'your_api_key_here':
+            return api_key
+
+    # 3. Fallback to skill directory .env
     if skill_dir is None:
         skill_dir = Path(__file__).parent.parent
 
     env_file = skill_dir / '.env'
     env_example = skill_dir / '.env.example'
 
-    # Load .env if exists
     if env_file.exists():
         load_dotenv(env_file)
     elif env_example.exists():
-        # Copy example to .env and prompt user
         print(f"⚠️  .env file not found. Creating from .env.example...")
-        env_example.read_text()
         with open(env_file, 'w') as f:
             f.write(env_example.read_text())
         print(f"📝 Please edit {env_file} and add your Kie.ai API key")
@@ -165,8 +181,11 @@ def load_api_key(skill_dir: Optional[Path] = None) -> str:
 
     if not api_key or api_key == 'your_api_key_here':
         raise ValueError(
-            f"Invalid API key in {env_file}. "
-            "Please get your API key from https://kie.ai/dashboard/api-keys"
+            "KIEAI_API_KEY not found. Set it via:\n"
+            "  1. Environment variable: export KIEAI_API_KEY=your_key\n"
+            "  2. Auth loader: ~/.claude/auth/kiei-api.env\n"
+            "  3. Skill .env file: " + str(env_file) + "\n"
+            "Get your API key from https://kie.ai/dashboard/api-keys"
         )
 
     return api_key

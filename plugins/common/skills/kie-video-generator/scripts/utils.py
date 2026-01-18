@@ -230,29 +230,45 @@ CREDIT_TO_USD = 0.005
 
 
 def load_api_key(skill_dir: Optional[Path] = None) -> str:
-    """Load Kie.ai API key from environment or .env file."""
+    """
+    Load Kie.ai API key from environment variable or .env file.
+
+    Priority order:
+    1. Environment variable KIEAI_API_KEY (set via auth-loader or shell)
+    2. ~/.claude/auth/kiei-api.env (centralized auth management)
+    3. Skill directory .env file (local fallback)
+    """
+    # 1. Check if KIEAI_API_KEY is already set in environment
+    api_key = os.getenv('KIEAI_API_KEY', '').strip()
+    if api_key and api_key != 'your_api_key_here':
+        return api_key
+
+    # 2. Try loading from centralized auth directory (~/.claude/auth/)
+    auth_env = Path.home() / '.claude' / 'auth' / 'kiei-api.env'
+    if auth_env.exists():
+        load_dotenv(auth_env)
+        api_key = os.getenv('KIEAI_API_KEY', '').strip()
+        if api_key and api_key != 'your_api_key_here':
+            return api_key
+
+    # 3. Fallback to skill directory .env
     if skill_dir is None:
         skill_dir = Path(__file__).parent.parent
 
     env_file = skill_dir / '.env'
-    auth_file = Path.home() / '.claude' / 'auth' / 'kie-ai.env'
 
-    # Try skill .env first
     if env_file.exists():
         load_dotenv(env_file)
 
-    # Try centralized auth
-    if auth_file.exists():
-        load_dotenv(auth_file)
+    api_key = os.getenv('KIEAI_API_KEY', '').strip()
 
-    api_key = os.getenv('KIE_AI_API_KEY', '').strip()
-
-    if not api_key:
+    if not api_key or api_key == 'your_api_key_here':
         raise ValueError(
-            "API key not found. Set KIE_AI_API_KEY in:\n"
-            f"  - {env_file}\n"
-            f"  - {auth_file}\n"
-            "  - Environment variable"
+            "KIEAI_API_KEY not found. Set it via:\n"
+            "  1. Environment variable: export KIEAI_API_KEY=your_key\n"
+            "  2. Auth loader: ~/.claude/auth/kiei-api.env\n"
+            "  3. Skill .env file: " + str(env_file) + "\n"
+            "Get your API key from https://kie.ai/dashboard/api-keys"
         )
 
     return api_key
