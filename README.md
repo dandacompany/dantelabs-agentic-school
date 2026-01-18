@@ -117,6 +117,36 @@ npx dantelabs-agentic-school install --path ~
 claude
 ```
 
+#### 방법 4: Claude Code 세션 내 마켓플레이스 설치
+
+Claude Code 실행 중 슬래시 명령어로 직접 마켓플레이스를 등록하고 플러그인을 설치할 수 있습니다.
+
+**1. 마켓플레이스 추가**
+
+```bash
+# GitHub 저장소로 추가
+/plugin marketplace add dandacompany/dantelabs-agentic-school
+```
+
+**2. 플러그인 설치**
+
+```bash
+# 특정 플러그인 설치
+/plugin install brand-analytics@dantelabs-agentic-school
+
+# 또는 /plugin 실행 후 Discover 탭에서 검색하여 설치
+/plugin
+```
+
+**3. 설치된 플러그인 확인**
+
+```bash
+# 플러그인 목록 확인
+/plugin
+```
+
+> **Tip**: `/plugin` 명령어 실행 후 **Discover** 탭에서 마켓플레이스의 모든 플러그인을 검색하고 설치할 수 있습니다.
+
 ### 플러그인 사용 확인
 
 Claude Code 실행 후 `/help` 명령어로 설치된 커맨드를 확인할 수 있습니다:
