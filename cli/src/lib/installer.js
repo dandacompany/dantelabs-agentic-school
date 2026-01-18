@@ -47,6 +47,87 @@ async function copyDirectory(src, dest) {
 }
 
 /**
+ * Discover components by scanning plugin directory
+ */
+async function discoverComponents(localPath) {
+  const components = { agents: [], commands: [], skills: [] };
+
+  // Scan agents directory
+  const agentsDir = join(localPath, 'agents');
+  if (existsSync(agentsDir)) {
+    const files = await readdir(agentsDir);
+    components.agents = files
+      .filter(f => f.endsWith('.md'))
+      .map(f => f.replace('.md', ''));
+  }
+
+  // Scan commands directory
+  const commandsDir = join(localPath, 'commands');
+  if (existsSync(commandsDir)) {
+    const files = await readdir(commandsDir);
+    components.commands = files
+      .filter(f => f.endsWith('.md'))
+      .map(f => f.replace('.md', ''));
+  }
+
+  // Scan skills directory
+  const skillsDir = join(localPath, 'skills');
+  if (existsSync(skillsDir)) {
+    const entries = await readdir(skillsDir, { withFileTypes: true });
+    components.skills = entries
+      .filter(e => e.isDirectory())
+      .map(e => e.name);
+  }
+
+  return components;
+}
+
+/**
+ * Discover components from remote GitHub directory
+ */
+async function discoverRemoteComponents(remotePath) {
+  const { getDirectoryContents } = await import('./downloader.js');
+  const components = { agents: [], commands: [], skills: [] };
+
+  // Scan agents directory
+  try {
+    const agentsContents = await getDirectoryContents(`${remotePath}/agents`);
+    components.agents = agentsContents
+      .filter(f => f.type === 'file' && f.name.endsWith('.md'))
+      .map(f => f.name.replace('.md', ''));
+  } catch (e) { /* no agents dir */ }
+
+  // Scan commands directory
+  try {
+    const commandsContents = await getDirectoryContents(`${remotePath}/commands`);
+    components.commands = commandsContents
+      .filter(f => f.type === 'file' && f.name.endsWith('.md'))
+      .map(f => f.name.replace('.md', ''));
+  } catch (e) { /* no commands dir */ }
+
+  // Scan skills directory
+  try {
+    const skillsContents = await getDirectoryContents(`${remotePath}/skills`);
+    components.skills = skillsContents
+      .filter(f => f.type === 'dir')
+      .map(f => f.name);
+  } catch (e) { /* no skills dir */ }
+
+  return components;
+}
+
+/**
+ * Normalize source path (handle both 'path' and 'source' fields)
+ */
+function getSourcePath(plugin) {
+  // Support both old 'path' format and new 'source' format
+  const source = plugin.source || plugin.path;
+  if (!source) return `plugins/${plugin.name}`;
+  // Remove leading './' if present
+  return source.replace(/^\.\//, '');
+}
+
+/**
  * Install a single plugin to .claude directory
  *
  * Source structure (plugins/):
@@ -64,12 +145,21 @@ async function copyDirectory(src, dest) {
 export async function installPlugin(plugin, claudeDir, options = {}) {
   const { force = false, onProgress } = options;
   const pluginName = plugin.name;
-  const components = plugin.components || {};
-  const sourcePath = plugin.path; // e.g., "plugins/brand-analytics"
+  const sourcePath = getSourcePath(plugin); // e.g., "plugins/brand-analytics"
 
   // Determine if we should use local or remote source
   const useLocalSource = hasLocalSource(sourcePath);
   const localSourcePath = join(PACKAGE_ROOT, sourcePath);
+
+  // Discover components dynamically (or use provided components for backward compatibility)
+  let components = plugin.components;
+  if (!components || Object.keys(components).length === 0) {
+    if (useLocalSource) {
+      components = await discoverComponents(localSourcePath);
+    } else {
+      components = await discoverRemoteComponents(sourcePath);
+    }
+  }
 
   // Create base directories
   await ensureDir(join(claudeDir, 'agents'));
@@ -194,7 +284,20 @@ export async function installPlugin(plugin, claudeDir, options = {}) {
  */
 export async function uninstallPlugin(plugin, claudeDir) {
   const pluginName = plugin.name;
-  const components = plugin.components || {};
+  const sourcePath = getSourcePath(plugin);
+
+  // Discover components dynamically (or use provided components for backward compatibility)
+  let components = plugin.components;
+  if (!components || Object.keys(components).length === 0) {
+    const useLocalSource = hasLocalSource(sourcePath);
+    const localSourcePath = join(PACKAGE_ROOT, sourcePath);
+
+    if (useLocalSource) {
+      components = await discoverComponents(localSourcePath);
+    } else {
+      components = await discoverRemoteComponents(sourcePath);
+    }
+  }
 
   const results = {
     plugin: pluginName,

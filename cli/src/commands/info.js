@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import { getMarketplaceConfig } from '../lib/config.js';
+import { getMarketplaceConfig, enrichPluginWithComponents } from '../lib/config.js';
 import logger from '../utils/logger.js';
 import { t } from '../i18n/index.js';
 
@@ -11,7 +11,7 @@ export default function infoCommand(program) {
     .action(async (pluginName, options) => {
       try {
         const config = await getMarketplaceConfig();
-        const plugin = config.plugins.find((p) => p.name === pluginName);
+        let plugin = config.plugins.find((p) => p.name === pluginName);
 
         if (!plugin) {
           logger.error(t('info.pluginNotFound', { name: pluginName }));
@@ -22,6 +22,9 @@ export default function infoCommand(program) {
           });
           process.exit(1);
         }
+
+        // Enrich plugin with discovered components
+        plugin = await enrichPluginWithComponents(plugin);
 
         if (options.json) {
           console.log(JSON.stringify(plugin, null, 2));

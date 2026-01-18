@@ -1,4 +1,4 @@
-import { readFile, writeFile } from 'fs/promises';
+import { readFile, writeFile, readdir } from 'fs/promises';
 import { join } from 'path';
 import { existsSync } from 'fs';
 import { fileURLToPath } from 'url';
@@ -6,6 +6,9 @@ import { dirname } from 'path';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+
+// Package root directory
+const PACKAGE_ROOT = join(__dirname, '../../..');
 
 const CONFIG_CACHE_FILE = '.dantelabs-cache.json';
 const CACHE_TTL = 1000 * 60 * 60; // 1 hour
@@ -122,6 +125,118 @@ async function saveCachedConfig(config) {
   } catch {
     // Ignore cache write errors
   }
+}
+
+/**
+ * Normalize source path (handle both 'path' and 'source' fields)
+ */
+export function getSourcePath(plugin) {
+  const source = plugin.source || plugin.path;
+  if (!source) return `plugins/${plugin.name}`;
+  return source.replace(/^\.\//, '');
+}
+
+/**
+ * Discover components by scanning local plugin directory
+ */
+async function discoverLocalComponents(pluginPath) {
+  const components = { agents: [], commands: [], skills: [] };
+
+  // Scan agents directory
+  const agentsDir = join(pluginPath, 'agents');
+  if (existsSync(agentsDir)) {
+    const files = await readdir(agentsDir);
+    components.agents = files
+      .filter(f => f.endsWith('.md'))
+      .map(f => f.replace('.md', ''));
+  }
+
+  // Scan commands directory
+  const commandsDir = join(pluginPath, 'commands');
+  if (existsSync(commandsDir)) {
+    const files = await readdir(commandsDir);
+    components.commands = files
+      .filter(f => f.endsWith('.md'))
+      .map(f => f.replace('.md', ''));
+  }
+
+  // Scan skills directory
+  const skillsDir = join(pluginPath, 'skills');
+  if (existsSync(skillsDir)) {
+    const entries = await readdir(skillsDir, { withFileTypes: true });
+    components.skills = entries
+      .filter(e => e.isDirectory())
+      .map(e => e.name);
+  }
+
+  return components;
+}
+
+/**
+ * Discover components from remote GitHub directory
+ */
+async function discoverRemoteComponents(remotePath) {
+  const components = { agents: [], commands: [], skills: [] };
+
+  const fetchDir = async (path) => {
+    const url = `${GITHUB_CONFIG.apiBase}/contents/${path}?ref=${GITHUB_CONFIG.branch}`;
+    const response = await fetch(url, {
+      headers: {
+        'Accept': 'application/vnd.github.v3+json',
+        'User-Agent': 'dantelabs-agentic-school-cli'
+      }
+    });
+    if (!response.ok) return [];
+    return response.json();
+  };
+
+  // Scan agents directory
+  try {
+    const agentsContents = await fetchDir(`${remotePath}/agents`);
+    components.agents = agentsContents
+      .filter(f => f.type === 'file' && f.name.endsWith('.md'))
+      .map(f => f.name.replace('.md', ''));
+  } catch (e) { /* no agents dir */ }
+
+  // Scan commands directory
+  try {
+    const commandsContents = await fetchDir(`${remotePath}/commands`);
+    components.commands = commandsContents
+      .filter(f => f.type === 'file' && f.name.endsWith('.md'))
+      .map(f => f.name.replace('.md', ''));
+  } catch (e) { /* no commands dir */ }
+
+  // Scan skills directory
+  try {
+    const skillsContents = await fetchDir(`${remotePath}/skills`);
+    components.skills = skillsContents
+      .filter(f => f.type === 'dir')
+      .map(f => f.name);
+  } catch (e) { /* no skills dir */ }
+
+  return components;
+}
+
+/**
+ * Enrich plugin with discovered components
+ */
+export async function enrichPluginWithComponents(plugin) {
+  // If components already exist, return as is
+  if (plugin.components && Object.keys(plugin.components).length > 0) {
+    return plugin;
+  }
+
+  const sourcePath = getSourcePath(plugin);
+  const localPath = join(PACKAGE_ROOT, sourcePath);
+
+  let components;
+  if (existsSync(localPath)) {
+    components = await discoverLocalComponents(localPath);
+  } else {
+    components = await discoverRemoteComponents(sourcePath);
+  }
+
+  return { ...plugin, components };
 }
 
 /**

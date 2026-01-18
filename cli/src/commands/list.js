@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import { getMarketplaceConfig } from '../lib/config.js';
+import { getMarketplaceConfig, enrichPluginWithComponents } from '../lib/config.js';
 import logger from '../utils/logger.js';
 import { t } from '../i18n/index.js';
 
@@ -14,8 +14,13 @@ export default function listCommand(program) {
       try {
         const config = await getMarketplaceConfig();
 
+        // Enrich plugins with discovered components
+        const enrichedPlugins = await Promise.all(
+          config.plugins.map(p => enrichPluginWithComponents(p))
+        );
+
         if (options.json) {
-          console.log(JSON.stringify(config.plugins, null, 2));
+          console.log(JSON.stringify(enrichedPlugins, null, 2));
           return;
         }
 
@@ -24,7 +29,7 @@ export default function listCommand(program) {
         console.log(chalk.gray('━'.repeat(60)));
         console.log();
 
-        for (const plugin of config.plugins) {
+        for (const plugin of enrichedPlugins) {
           console.log(
             chalk.bold.cyan(`${plugin.name}`),
             chalk.gray(`v${plugin.version}`)
@@ -59,15 +64,15 @@ export default function listCommand(program) {
         }
 
         // Summary
-        const totalAgents = config.plugins.reduce(
+        const totalAgents = enrichedPlugins.reduce(
           (sum, p) => sum + (p.components?.agents?.length || 0),
           0
         );
-        const totalCommands = config.plugins.reduce(
+        const totalCommands = enrichedPlugins.reduce(
           (sum, p) => sum + (p.components?.commands?.length || 0),
           0
         );
-        const totalSkills = config.plugins.reduce(
+        const totalSkills = enrichedPlugins.reduce(
           (sum, p) => sum + (p.components?.skills?.length || 0),
           0
         );
@@ -76,7 +81,7 @@ export default function listCommand(program) {
         console.log(
           chalk.bold(`${t('common.summary')}:`),
           t('list.summaryText', {
-            plugins: config.plugins.length,
+            plugins: enrichedPlugins.length,
             agents: totalAgents,
             commands: totalCommands,
             skills: totalSkills
