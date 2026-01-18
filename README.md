@@ -23,7 +23,7 @@
 - **전문 에이전트**: 각 단계별 전문성을 갖춘 AI 에이전트
 - **실행 커맨드**: 직접 실행 가능한 작업 커맨드
 - **전문 스킬**: 도메인 지식 및 프레임워크
-- **외부 스킬 연동**: kie-image-generator, kie-video-generator 등
+- **AI 생성 도구 내장**: kie-image-generator, kie-video-generator (common 플러그인)
 
 ## 설치
 
@@ -59,6 +59,7 @@ npx dantelabs-agentic-school uninstall brand-analytics
 | `--dry-run` | 미리보기 (실제 설치 안함) |
 | `--json` | JSON 형식 출력 (list, info) |
 | `-v, --verbose` | 상세 정보 표시 |
+| `-l, --lang` | 언어 설정 (en, ko) - 기본: en |
 
 ### Claude Code에서 플러그인 사용
 
@@ -144,6 +145,8 @@ Claude Code 실행 후 `/help` 명령어로 설치된 커맨드를 확인할 수
 | Skill | pptx | 마케팅 프레젠테이션 제작 도구 |
 | Skill | pdf | 마케팅 PDF 문서 제작 및 처리 도구 |
 | Skill | docx | 마케팅 Word 문서 제작 도구 |
+| Skill | kie-image-generator | Kie.ai 기반 AI 이미지 생성 |
+| Skill | kie-video-generator | Kie.ai 기반 AI 비디오 생성 |
 
 ### auth-manager 스킬
 
@@ -237,10 +240,10 @@ python ~/.claude/skills/kie-video-generator/scripts/generate_video.py --credits
 
 | 항목 | 개수 |
 | --- | --- |
-| 플러그인 | 8개 (common 1 + marketing 7) |
+| 플러그인 | 9개 (common 1 + marketing 8) |
 | 에이전트 | 15개 |
 | 커맨드 | 10개 |
-| 스킬 | 15개 (common 4 + marketing 11) |
+| 스킬 | 19개 (common 6 + marketing 13) |
 
 ## 플러그인 목록
 
@@ -317,10 +320,7 @@ python ~/.claude/skills/kie-video-generator/scripts/generate_video.py --credits
 | Skill | image-prompt-guide | 이미지 프롬프트 가이드 |
 | Skill | video-production | 비디오 제작 가이드 |
 
-**외부 스킬 연동**:
-
-- `kie-image-generator`: 실제 이미지 생성
-- `kie-video-generator`: 실제 비디오 생성
+> **Note**: 이미지/비디오 생성을 위한 `kie-image-generator`, `kie-video-generator` 스킬은 common 플러그인에 포함되어 있습니다.
 
 ### 7. campaign-orchestration
 
@@ -333,6 +333,15 @@ python ~/.claude/skills/kie-video-generator/scripts/generate_video.py --credits
 | Command | /run-full-pipeline | 전체 파이프라인 실행 |
 | Command | /run-phase | 특정 단계 실행 |
 | Skill | pipeline-framework | 파이프라인 프레임워크 |
+
+### 8. market-research
+
+시장 분석 리포트 및 데이터 시각화를 생성합니다.
+
+| 컴포넌트 | 이름 | 설명 |
+| --- | --- | --- |
+| Skill | analysis-reports | 시장 분석 리포트 템플릿 |
+| Skill | diagram-generator | 데이터 시각화 다이어그램 생성 |
 
 ## 사용 예시
 
@@ -449,9 +458,9 @@ AI 모델 선택부터 학습, 배포까지의 파이프라인
 ## 요구사항
 
 - Claude Code CLI
-- kie-image-generator 스킬 (이미지 생성용)
-- kie-video-generator 스킬 (비디오 생성용)
+- Node.js 18.0.0 이상 (NPX CLI용)
 
+> 이미지/비디오 생성 스킬(`kie-image-generator`, `kie-video-generator`)은 common 플러그인에 포함되어 있습니다.
 > API 키 설정은 [auth-manager 스킬](#auth-manager-스킬) 참조
 
 ## 라이선스
