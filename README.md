@@ -61,6 +61,38 @@ npx dantelabs-agentic-school uninstall brand-analytics
 | `-v, --verbose` | 상세 정보 표시 |
 | `-l, --lang` | 언어 설정 (en, ko) - 기본: en |
 
+### 샘플 다운로드
+
+학습용 샘플 파일을 다운로드하여 마케팅 자동화 파이프라인을 직접 체험해볼 수 있습니다.
+
+```bash
+# 사용 가능한 샘플 목록 보기
+npx dantelabs-agentic-school sample --list
+
+# 특정 샘플 다운로드
+npx dantelabs-agentic-school sample marketing
+
+# 전체 샘플 다운로드
+npx dantelabs-agentic-school sample --all
+
+# 다운로드 경로 지정
+npx dantelabs-agentic-school sample marketing --path ./my-project
+
+# 기존 파일 덮어쓰기
+npx dantelabs-agentic-school sample marketing --force
+```
+
+샘플을 다운로드하면 `samples/` 폴더에 학습 자료가 저장됩니다:
+
+```text
+samples/
+└── marketing/
+    ├── dante-coffee-agentic-marketing-scenario.md  # 마케팅 시나리오 가이드
+    └── dante-coffee-brand-brief.md                 # 브랜드 브리프 예시
+```
+
+> **Tip**: 다운로드한 브랜드 브리프를 사용하여 `/analyze-brand --brand-doc ./samples/marketing/dante-coffee-brand-brief.md` 명령어로 전체 파이프라인을 실행해볼 수 있습니다.
+
 ### Claude Code에서 플러그인 사용
 
 #### 방법 1: 프로젝트별 설치 (권장)

@@ -12,23 +12,23 @@
 
 **에이전틱 마케팅 파이프라인 단계**
 
-| 단계 | 설명 | 담당 에이전트 | 산출물 |
+| 단계 | 설명 | 담당 에이전트/스킬 | 산출물 |
 |---|---|---|---|
-| 0. 시장 리서치 | 시장 규모, 트렌드, 경쟁 환경 분석 | Market Analyst | 시장 분석 리포트 |
-| 1. 브랜드 분석 | 브랜드 포지셔닝 및 차별화 전략 | Brand Strategist | 포지셔닝 맵, SWOT |
-| 2. 세그먼트 정의 | 타깃 고객 그룹 구분 | Segmentation Architect | 세그먼트 정의서 |
-| 3. 페르소나 생성 | 대표 고객상 설계 | Personalization Architect | 페르소나 카드 |
-| 4. 채널 전략 수립 | 적합 채널/미디어 선정 | Social Strategy Director | 채널 전략서 |
-| 5. 콘텐츠 제작 | 카피, 이미지, 영상 제작 | Creative Team | 마케팅 에셋 |
+| 0. 시장 리서치 | 시장 규모, 트렌드, 경쟁 환경 분석 | market-analyst, competitive-intelligence | 시장 분석 리포트 |
+| 1. 브랜드 분석 | 브랜드 포지셔닝 및 차별화 전략 | brand-strategist, competitive-analyst | 포지셔닝 맵, SWOT |
+| 2. 세그먼트 정의 | 타깃 고객 그룹 구분 | segmentation-architect, data-analyst | 세그먼트 정의서 |
+| 3. 페르소나 생성 | 대표 고객상 설계 | persona-architect, customer-insights-partner | 페르소나 카드 |
+| 4. 채널 전략 수립 | 적합 채널/미디어 선정 | social-strategy-director, channel-analyst | 채널 전략서 |
+| 5. 콘텐츠 제작 | 카피, 이미지, 영상 제작 | copy-strategist, creative-director | 마케팅 에셋 |
 
 **콘텐츠 제작 하위 단계**
 
 | 단계 | 산출물 | 담당 에이전트 |
 |---|---|---|
-| 5-1. 홍보 카피 작성 | 광고/프로모션 카피 | Copy Strategist |
-| 5-2. 이미지 크리에이티브 제작 | 비주얼 콘텐츠 생성 | Creative Director |
-| 5-3. 쇼츠 스크립트 | 쇼츠/숏폼 영상 대본 | Video Strategist |
-| 5-4. 캠페인 통합 | 전체 캠페인 기획/집행 | Campaign Manager |
+| 5-1. 홍보 카피 작성 | 광고/프로모션 카피 | copy-strategist, conversion-copywriter |
+| 5-2. 이미지 크리에이티브 제작 | 비주얼 콘텐츠 생성 | creative-director, production-coordinator |
+| 5-3. 쇼츠 스크립트 | 쇼츠/숏폼 영상 대본 | script-writer |
+| 5-4. 캠페인 통합 | 전체 캠페인 기획/집행 | campaign-director, workflow-coordinator |
 
 > 핵심: **시장 리서치 → 브랜드 분석** 순서로 진행하여, 객관적인 시장 데이터를 기반으로 브랜드 전략을 수립합니다.
 
@@ -40,21 +40,27 @@
 
 브랜드 분석에 앞서 **객관적인 시장 데이터**를 확보하여 전략 수립의 기반을 마련합니다.
 
-### 사용 에이전트
-- **market-analyst** (market-research 플러그인)
-- **competitive-analyst** (market-research 플러그인)
+### 사용 에이전트 (market-research 플러그인)
+- `market-analyst`: 시장 규모, 성장률, TAM/SAM/SOM, PESTLE 분석
+- `competitive-intelligence`: Porter's 5 Forces, 경쟁사 포지셔닝 분석
 
-### 사용 스킬
-- `analysis-reports`: 시장 분석 리포트 작성
-- `diagram-generator`: 시각자료 생성
+### 사용 커맨드
+- `/analyze-market`: 시장 규모 및 성장률 종합 분석
+- `/competitive-landscape`: 경쟁 환경 및 산업 구조 분석
 
-### 실행 커맨드
+### 지원 스킬
+- `analysis-reports`: 시장 분석 리포트 템플릿
+- `diagram-generator`: 시각자료 생성 (ASCII, Mermaid, 텍스트 다이어그램)
+
+### 실행 방법
 ```bash
-# 시장 분석 리포트 생성
-/market-research:analyze-market --industry "Korean premium coffee" --scope "2024-2034"
+# 커맨드로 실행
+/analyze-market --industry "한국 프리미엄 커피 시장" --scope "2024-2034"
+/competitive-landscape --market "한국 커피 시장" --competitors "스타벅스,이디야,투썸"
 
-# 경쟁 환경 분석
-/market-research:competitive-landscape --market "Korean coffee retail"
+# Claude에게 직접 요청
+"한국 프리미엄 커피 시장 분석 리포트를 작성해줘. 2024-2034년 전망 포함해서."
+"한국 커피 리테일 시장의 경쟁 환경을 Porter's 5 Forces로 분석해줘."
 ```
 
 ### 리서치 범위
@@ -239,22 +245,31 @@
 
 ### 산출물 4: 시각자료 생성
 
+`diagram-generator` 스킬의 `generate_visual.py` 스크립트를 활용하여 시각자료를 생성합니다.
+
 ```bash
-# diagram-generator 스킬을 활용한 시각자료 생성
-python scripts/generate_visual.py "한국 커피 시장 성장 추이 막대 그래프 2020-2034,
-역사적 데이터 진한 갈색, 전망 데이터 연한 갈색" -o figures/01_market_growth.png
+# diagram-generator 스킬 스크립트 경로
+# ~/.claude/skills/diagram-generator/scripts/generate_visual.py
 
-python scripts/generate_visual.py "TAM SAM SOM 동심원 다이어그램,
-TAM 8.5조원 한국 전체 커피 시장, SAM 2.1조원 프리미엄 세그먼트,
-SOM 210억원 5년 목표" -o figures/02_tam_sam_som.png
+# 시장 성장 차트
+python ~/.claude/skills/diagram-generator/scripts/generate_visual.py \
+  "한국 커피 시장 성장 추이 막대 그래프 2020-2034, 역사적 데이터 진한 갈색, 전망 데이터 연한 갈색" \
+  -o figures/01_market_growth.png --doc-type report
 
-python scripts/generate_visual.py "Porter 5 Forces 분석 다이어그램,
-중앙 산업 내 경쟁 HIGH, 신규 진입자 MEDIUM, 대체재 MEDIUM,
-공급자 LOW, 구매자 HIGH" -o figures/03_porters_forces.png
+# TAM/SAM/SOM 다이어그램
+python ~/.claude/skills/diagram-generator/scripts/generate_visual.py \
+  "TAM SAM SOM 동심원 다이어그램, TAM 8.5조원 한국 전체 커피 시장, SAM 2.1조원 프리미엄 세그먼트, SOM 210억원 5년 목표" \
+  -o figures/02_tam_sam_som.png --doc-type report
 
-python scripts/generate_visual.py "2x2 경쟁 포지셔닝 매트릭스,
-X축 품질 인식, Y축 가격대, 스타벅스 블루보틀 우상단,
-메가 컴포즈 좌하단, Dante Coffee 중앙 강조" -o figures/04_competitive_positioning.png
+# Porter's 5 Forces 다이어그램
+python ~/.claude/skills/diagram-generator/scripts/generate_visual.py \
+  "Porter 5 Forces 분석 다이어그램, 중앙 산업 내 경쟁 HIGH, 신규 진입자 MEDIUM, 대체재 MEDIUM, 공급자 LOW, 구매자 HIGH" \
+  -o figures/03_porters_forces.png --doc-type report
+
+# 경쟁 포지셔닝 매트릭스
+python ~/.claude/skills/diagram-generator/scripts/generate_visual.py \
+  "2x2 경쟁 포지셔닝 매트릭스, X축 품질 인식, Y축 가격대, 스타벅스 블루보틀 우상단, 메가 컴포즈 좌하단, Dante Coffee 중앙 강조" \
+  -o figures/04_competitive_positioning.png --doc-type report
 ```
 
 ### Phase 0 요약
@@ -276,9 +291,9 @@ X축 품질 인식, Y축 가격대, 스타벅스 블루보틀 우상단,
 
 Phase 0의 시장 리서치 결과를 기반으로, Dante Coffee의 **구체적인 포지셔닝과 차별화 전략**을 수립합니다.
 
-### 사용 에이전트
-- **brand-strategist** (brand-analytics 플러그인)
-- **competitive-intel-lead** (brand-analytics 플러그인)
+### 사용 에이전트 (brand-analytics 플러그인)
+- **brand-strategist**: 브랜드 전략 분석
+- **competitive-analyst**: 경쟁사 분석
 
 ### 입력 데이터
 ```yaml
@@ -300,14 +315,16 @@ Phase 0의 시장 리서치 결과를 기반으로, Dante Coffee의 **구체적�
   - 고가: 스타벅스, 블루보틀
 ```
 
+### 사용 스킬
+- `brand-positioning`: 포지셔닝 프레임워크
+
 ### 실행 커맨드
 ```bash
-# 브랜드 포지셔닝 분석 (시장 리서치 결과 연계)
-/brand-analytics:analyze-positioning --brand "Dante Coffee" --market-report "./reports/phase0-market-analysis.md"
-
-# 경쟁사 대비 차별화 전략
-/brand-analytics:differentiation-strategy --competitors "메가커피,컴포즈,이디야,투썸"
+# 브랜드 분석 실행
+/analyze-brand --brand-doc "./dante-coffee-brand-brief.md"
 ```
+
+> **Tip**: `--brand-doc` 옵션으로 브랜드 소개서 파일을 지정하면 자동으로 포지셔닝 분석이 수행됩니다.
 
 ### 산출물: SWOT 분석 (시장 리서치 기반)
 
@@ -363,16 +380,18 @@ Phase 0의 시장 리서치 결과를 기반으로, Dante Coffee의 **구체적�
 
 ## Phase 2: 고객 세그먼테이션
 
-### 사용 에이전트
-- **segmentation-architect** (customer-segmentation 플러그인)
+### 사용 에이전트 (customer-segmentation 플러그인)
+- **segmentation-architect**: 세그먼트 설계
+- **data-analyst**: 데이터 분석
 
 ### 사용 스킬
 - `segmentation-framework`: 세그먼트 설계 및 문서화
+- `activation-map`: 세그먼트 활성화 맵
 
 ### 실행 커맨드
 ```bash
-# 고객 세그먼트 설계 (시장 리서치 + 브랜드 분석 기반)
-/customer-segmentation:create-segments --criteria "demographics,behavior,value" --market-context "./reports/phase0-market-analysis.md"
+# 고객 세그먼트 설계
+/create-segments --brand-doc "./brand-strategy-brief.md"
 ```
 
 ### Dante Coffee 세그먼트 정의
@@ -401,16 +420,19 @@ Phase 0의 시장 리서치 결과를 기반으로, Dante Coffee의 **구체적�
 
 ## Phase 3: 타겟 페르소나 생성
 
-### 사용 에이전트
-- **persona-architect** (persona-builder 플러그인)
-- **customer-insights-partner** (persona-builder 플러그인)
+### 사용 에이전트 (persona-builder 플러그인)
+- **persona-architect**: 페르소나 설계
+- **customer-insights-partner**: 고객 인사이트
+
+### 사용 스킬
+- `persona-framework`: 페르소나 작성 가이드
 
 ### 선택 세그먼트: **가성비 헌터** (40% 비중, 최대 타겟)
 
 ### 실행 커맨드
 ```bash
 # 페르소나 생성
-/persona-builder:build-persona --segment "가성비 헌터" --depth "detailed"
+/build-persona --segment "가성비 헌터"
 ```
 
 ### 페르소나 카드: "스마트 직장인 지현"
@@ -468,14 +490,18 @@ Phase 0의 시장 리서치 결과를 기반으로, Dante Coffee의 **구체적�
 
 ## Phase 4: SNS 채널 전략 수립
 
-### 사용 에이전트
-- **social-strategy-director** (social-strategy 플러그인)
-- **channel-analyst** (social-strategy 플러그인)
+### 사용 에이전트 (social-strategy 플러그인)
+- **social-strategy-director**: 채널 전략 총괄
+- **channel-analyst**: 채널별 분석
+
+### 사용 스킬
+- `channel-roadmap`: 채널 로드맵
+- `content-pillars`: 콘텐츠 필러 설계
 
 ### 실행 커맨드
 ```bash
 # 채널 전략 수립
-/social-strategy:plan-channels --persona "스마트직장인지현" --budget "월200만원"
+/plan-channels --persona "김지현"
 ```
 
 ### 채널별 전략
@@ -512,14 +538,22 @@ Phase 0의 시장 리서치 결과를 기반으로, Dante Coffee의 **구체적�
 
 ## Phase 5: 홍보 카피 제작
 
-### 사용 에이전트
-- **copy-strategist** (content-creation 플러그인)
-- **conversion-copywriter** (content-creation 플러그인)
+### 사용 에이전트 (content-creation 플러그인)
+- **copy-strategist**: 카피 전략
+- **conversion-copywriter**: 전환 카피 작성
+- **script-writer**: 영상 스크립트
+
+### 사용 스킬
+- `message-architecture`: 메시지 구조
+- `hook-formulas`: 훅 작성 공식
 
 ### 실행 커맨드
 ```bash
 # 채널별 카피 생성
-/content-creation:generate-copy --persona "스마트직장인지현" --channels "instagram,youtube"
+/generate-copy --channel instagram --persona "김지현"
+
+# 영상 스크립트 작성
+/write-script --type shorts --duration 30s
 ```
 
 ### 인스타그램 피드 카피
@@ -611,14 +645,18 @@ Phase 0의 시장 리서치 결과를 기반으로, Dante Coffee의 **구체적�
 
 ## Phase 6: 홍보 이미지 생성
 
-### 사용 에이전트
-- **creative-director** (creative-production 플러그인)
-- **production-coordinator** (creative-production 플러그인)
+### 사용 에이전트 (creative-production 플러그인)
+- **creative-director**: 크리에이티브 총괄
+- **production-coordinator**: 제작 조율
+
+### 사용 스킬
+- `image-prompt-guide`: 이미지 프롬프트 가이드
+- `kie-image-generator` (common): AI 이미지 생성
 
 ### 실행 커맨드
 ```bash
 # 크리에이티브 생성 (kie-image-generator 연동)
-/creative-production:create-image --brief "가성비 헌터 타겟 인스타 피드" --style "warm,minimal"
+/create-image --concept "커피 라이프스타일" --type lifestyle
 ```
 
 ### 이미지 생성 프롬프트 (AI 이미지 생성용)
@@ -707,14 +745,18 @@ Colors: High contrast, yellow highlights
 
 ## Phase 7: 쇼츠 영상 제작
 
-### 사용 에이전트
-- **creative-director** (creative-production 플러그인)
-- **production-coordinator** (creative-production 플러그인)
+### 사용 에이전트 (creative-production 플러그인)
+- **creative-director**: 크리에이티브 총괄
+- **production-coordinator**: 제작 조율
+
+### 사용 스킬
+- `video-production`: 비디오 제작 가이드
+- `kie-video-generator` (common): AI 비디오 생성
 
 ### 실행 커맨드
 ```bash
 # 쇼츠 영상 생성 (kie-video-generator 연동)
-/creative-production:create-video --script "./scripts/shorts-ep1.md" --duration "30sec"
+/create-video --concept "드립백 추출" --duration 15s
 ```
 
 ### 쇼츠 시리즈 기획안
@@ -770,27 +812,26 @@ Colors: High contrast, yellow highlights
 ### 에이전트 오케스트레이션
 
 ```bash
-# 전체 캠페인 실행 (campaign-orchestration 사용)
-/campaign-orchestration:run-full-pipeline \
-  --brand-doc "./dante-coffee-brand-brief.md" \
-  --target-segment "가성비 헌터" \
-  --channels "instagram,youtube-shorts,naver" \
-  --budget "2000000" \
-  --duration "30days"
+# 전체 캠페인 실행 (campaign-orchestration 플러그인)
+/run-full-pipeline --brand-doc "./dante-coffee-brand-brief.md"
+
+# 또는 특정 단계만 실행
+/run-phase --phase 1  # 브랜드 분석만
+/run-phase --phase 5  # 콘텐츠 제작만
 ```
 
 ### 사용된 플러그인 및 에이전트 요약
 
 | Phase | 플러그인 | 에이전트 | 스킬 |
 |-------|---------|---------|------|
-| 0. 시장 리서치 | market-research | market-analyst, competitive-analyst | analysis-reports, diagram-generator |
-| 1. 브랜드 분석 | brand-analytics | brand-strategist, competitive-intel-lead | brand-positioning |
-| 2. 세그먼테이션 | customer-segmentation | segmentation-architect | segmentation-framework |
+| 0. 시장 리서치 | market-research | market-analyst, competitive-intelligence | analysis-reports, diagram-generator |
+| 1. 브랜드 분석 | brand-analytics | brand-strategist, competitive-analyst | brand-positioning |
+| 2. 세그먼테이션 | customer-segmentation | segmentation-architect, data-analyst | segmentation-framework, activation-map |
 | 3. 페르소나 | persona-builder | persona-architect, customer-insights-partner | persona-framework |
-| 4. 채널 전략 | social-strategy | social-strategy-director, channel-analyst | channel-roadmap |
-| 5. 카피 제작 | content-creation | copy-strategist, conversion-copywriter | message-architecture |
-| 6. 이미지 생성 | creative-production | creative-director, production-coordinator | image-prompt-guide |
-| 7. 영상 제작 | creative-production | creative-director, production-coordinator | video-production |
+| 4. 채널 전략 | social-strategy | social-strategy-director, channel-analyst | channel-roadmap, content-pillars |
+| 5. 카피 제작 | content-creation | copy-strategist, conversion-copywriter, script-writer | message-architecture, hook-formulas |
+| 6. 이미지 생성 | creative-production + common | creative-director, production-coordinator | image-prompt-guide, kie-image-generator |
+| 7. 영상 제작 | creative-production + common | creative-director, production-coordinator | video-production, kie-video-generator |
 
 ### 예상 시간 절약
 
@@ -819,9 +860,11 @@ Colors: High contrast, yellow highlights
 
 ## 참고 자료
 
-- [dantelabs-agentic-school 플러그인](../dantelabs-agentic-school/)
+- [dantelabs-agentic-school GitHub](https://github.com/dandacompany/dantelabs-agentic-school)
 - [Dante Coffee 브랜드 소개서](./dante-coffee-brand-brief.md)
-- [시장 분석 리포트 템플릿](../dantelabs-agentic-school/plugins/market-research/skills/analysis-reports/)
+- 시장 분석 에이전트: `plugins/market-research/agents/`
+- 시장 분석 커맨드: `plugins/market-research/commands/`
+- 시장 분석 리포트 스킬: `plugins/market-research/skills/analysis-reports/`
 
 ---
 

@@ -17,7 +17,7 @@ const CACHE_TTL = 1000 * 60 * 60; // 1 hour
 export const GITHUB_CONFIG = {
   owner: 'dandacompany',
   repo: 'dantelabs-agentic-school',
-  branch: 'main',
+  branch: 'master',
   get rawBase() {
     return `https://raw.githubusercontent.com/${this.owner}/${this.repo}/${this.branch}`;
   },

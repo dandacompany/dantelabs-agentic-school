@@ -96,6 +96,32 @@ export default {
     removedSummary: 'Removed: {agents} agents, {commands} commands, {skills} skills'
   },
 
+  // Sample command
+  sample: {
+    description: 'Download sample files for learning',
+    optionAll: 'Download all samples',
+    optionList: 'List available samples',
+    optionPath: 'Download path (default: current directory)',
+    optionForce: 'Force overwrite existing files',
+    fetchingList: 'Fetching sample list...',
+    availableTitle: 'Available Samples',
+    noSamples: 'No samples available',
+    downloadHint: 'Download: npx dantelabs-agentic-school sample <name>',
+    downloadAllHint: 'Download all: npx dantelabs-agentic-school sample --all',
+    downloadingAll: 'Downloading all {count} samples...',
+    downloading: 'Downloading {name}...',
+    downloadingFile: 'Downloading {name}: {file}',
+    downloadedFiles: 'Downloaded {name} ({count} files)',
+    downloadFailed: 'Failed to download {name}',
+    allComplete: 'All samples downloaded ({count} files total)',
+    savedTo: 'Saved to: {path}',
+    alreadyExists: 'Skipping {name} (already exists, use --force to overwrite)',
+    alreadyExistsError: 'Directory already exists: {path}',
+    useForceHint: 'Use --force to overwrite existing files',
+    notFound: "Sample '{name}' not found",
+    fetchError: 'Failed to fetch sample list'
+  },
+
   // Logger
   logger: {
     info: 'info',

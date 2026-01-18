@@ -11,6 +11,7 @@ import installCommand from '../src/commands/install.js';
 import listCommand from '../src/commands/list.js';
 import infoCommand from '../src/commands/info.js';
 import uninstallCommand from '../src/commands/uninstall.js';
+import sampleCommand from '../src/commands/sample.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -62,6 +63,10 @@ ${chalk.bold(t('cli.examples'))}
   ${chalk.gray(t('cli.showPluginInfo'))}
   $ npx dantelabs-agentic-school info brand-analytics
 
+  ${chalk.gray('# Download samples')}
+  $ npx dantelabs-agentic-school sample marketing
+  $ npx dantelabs-agentic-school sample --all
+
   ${chalk.gray('# Korean language')}
   $ npx dantelabs-agentic-school --lang ko list
 
@@ -73,6 +78,7 @@ installCommand(program);
 listCommand(program);
 infoCommand(program);
 uninstallCommand(program);
+sampleCommand(program);
 
 // Parse arguments
 program.parse();

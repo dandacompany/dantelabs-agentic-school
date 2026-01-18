@@ -62,7 +62,7 @@
     },
     {
       "name": "market-research",
-      "description": "시장 분석 리포트 및 데이터 시각화를 생성합니다.",
+      "description": "시장 규모/성장률 분석, Porter's 5 Forces, 경쟁 환경 분석 등 종합적인 시장 조사를 수행합니다. TAM/SAM/SOM 모델링, PESTLE 분석, 경쟁사 포지셔닝 맵 등을 포함합니다.",
       "version": "1.0.0",
       "source": "./plugins/market-research"
     }

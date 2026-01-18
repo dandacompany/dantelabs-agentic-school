@@ -96,6 +96,32 @@ export default {
     removedSummary: '삭제됨: 에이전트 {agents}개, 명령어 {commands}개, 스킬 {skills}개'
   },
 
+  // Sample command
+  sample: {
+    description: '학습용 샘플 파일 다운로드',
+    optionAll: '모든 샘플 다운로드',
+    optionList: '사용 가능한 샘플 목록',
+    optionPath: '다운로드 경로 (기본: 현재 디렉토리)',
+    optionForce: '기존 파일 강제 덮어쓰기',
+    fetchingList: '샘플 목록 불러오는 중...',
+    availableTitle: '사용 가능한 샘플',
+    noSamples: '사용 가능한 샘플이 없습니다',
+    downloadHint: '다운로드: npx dantelabs-agentic-school sample <이름>',
+    downloadAllHint: '전체 다운로드: npx dantelabs-agentic-school sample --all',
+    downloadingAll: '전체 {count}개 샘플 다운로드 중...',
+    downloading: '{name} 다운로드 중...',
+    downloadingFile: '{name} 다운로드 중: {file}',
+    downloadedFiles: '{name} 다운로드 완료 ({count}개 파일)',
+    downloadFailed: '{name} 다운로드 실패',
+    allComplete: '전체 샘플 다운로드 완료 (총 {count}개 파일)',
+    savedTo: '저장 위치: {path}',
+    alreadyExists: '{name} 건너뜀 (이미 존재함, --force로 덮어쓰기 가능)',
+    alreadyExistsError: '디렉토리가 이미 존재합니다: {path}',
+    useForceHint: '기존 파일을 덮어쓰려면 --force 옵션을 사용하세요',
+    notFound: "샘플 '{name}'을(를) 찾을 수 없습니다",
+    fetchError: '샘플 목록을 불러오는 데 실패했습니다'
+  },
+
   // Logger
   logger: {
     info: '정보',
