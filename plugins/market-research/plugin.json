@@ -1,0 +1,9 @@
+{
+  "name": "market-research",
+  "description": "시장 분석 리포트 및 데이터 시각화를 생성합니다.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Dante Labs",
+    "email": "datapod.k@gmail.com"
+  }
+}

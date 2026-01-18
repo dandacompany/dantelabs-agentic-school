@@ -1,0 +1,9 @@
+{
+  "name": "common",
+  "description": "공통 유틸리티 스킬 모음. 인증 관리, 문서 제작 도구(PPTX, PDF, DOCX), 이미지/비디오 생성(Kie.ai) 등 여러 플러그인에서 공통으로 사용하는 기능을 제공합니다.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Dante Labs",
+    "email": "datapod.k@gmail.com"
+  }
+}

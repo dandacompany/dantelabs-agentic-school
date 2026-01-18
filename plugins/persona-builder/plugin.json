@@ -1,0 +1,9 @@
+{
+  "name": "persona-builder",
+  "description": "타겟 세그먼트의 상세 페르소나 카드를 생성합니다.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Dante Labs",
+    "email": "datapod.k@gmail.com"
+  }
+}

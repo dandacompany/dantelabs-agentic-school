@@ -1,0 +1,9 @@
+{
+  "name": "campaign-orchestration",
+  "description": "전체 마케팅 워크플로우를 통합하고 순차 실행합니다.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Dante Labs",
+    "email": "datapod.k@gmail.com"
+  }
+}

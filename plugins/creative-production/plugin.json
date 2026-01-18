@@ -1,0 +1,9 @@
+{
+  "name": "creative-production",
+  "description": "실제 이미지와 비디오를 생성합니다. common 플러그인의 kie-image-generator, kie-video-generator 스킬을 활용합니다.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Dante Labs",
+    "email": "datapod.k@gmail.com"
+  }
+}

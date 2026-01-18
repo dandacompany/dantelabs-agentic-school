@@ -1,0 +1,9 @@
+{
+  "name": "customer-segmentation",
+  "description": "데이터 기반 고객 세그먼트를 설계하고 정의합니다.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Dante Labs",
+    "email": "datapod.k@gmail.com"
+  }
+}

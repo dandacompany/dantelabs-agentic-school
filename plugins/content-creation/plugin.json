@@ -1,0 +1,9 @@
+{
+  "name": "content-creation",
+  "description": "채널별 홍보 카피 및 스크립트를 생성합니다.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Dante Labs",
+    "email": "datapod.k@gmail.com"
+  }
+}

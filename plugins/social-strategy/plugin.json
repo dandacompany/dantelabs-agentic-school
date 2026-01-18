@@ -1,0 +1,9 @@
+{
+  "name": "social-strategy",
+  "description": "페르소나 기반 채널 선정 및 콘텐츠 전략을 수립합니다.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Dante Labs",
+    "email": "datapod.k@gmail.com"
+  }
+}

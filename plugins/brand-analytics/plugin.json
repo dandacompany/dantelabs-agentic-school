@@ -1,0 +1,9 @@
+{
+  "name": "brand-analytics",
+  "description": "브랜드 소개서를 분석하여 포지셔닝, SWOT, 경쟁사 분석을 수행합니다.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Dante Labs",
+    "email": "datapod.k@gmail.com"
+  }
+}

@@ -16,96 +16,55 @@
       "name": "common",
       "description": "공통 유틸리티 스킬 모음. 인증 관리, 문서 제작 도구(PPTX, PDF, DOCX), 이미지/비디오 생성(Kie.ai) 등 여러 플러그인에서 공통으로 사용하는 기능을 제공합니다.",
       "version": "1.0.0",
-      "path": "plugins/common",
-      "components": {
-        "skills": ["auth-manager", "pptx", "pdf", "docx", "kie-image-generator", "kie-video-generator"]
-      }
+      "source": "./plugins/common"
     },
     {
       "name": "brand-analytics",
       "description": "브랜드 소개서를 분석하여 포지셔닝, SWOT, 경쟁사 분석을 수행합니다.",
       "version": "1.0.0",
-      "path": "plugins/brand-analytics",
-      "components": {
-        "agents": ["brand-strategist", "competitive-analyst"],
-        "commands": ["analyze-brand"],
-        "skills": ["brand-positioning"]
-      }
+      "source": "./plugins/brand-analytics"
     },
     {
       "name": "customer-segmentation",
       "description": "데이터 기반 고객 세그먼트를 설계하고 정의합니다.",
       "version": "1.0.0",
-      "path": "plugins/customer-segmentation",
-      "components": {
-        "agents": ["segmentation-architect", "data-analyst"],
-        "commands": ["create-segments"],
-        "skills": ["segmentation-framework", "activation-map"]
-      }
+      "source": "./plugins/customer-segmentation"
     },
     {
       "name": "persona-builder",
       "description": "타겟 세그먼트의 상세 페르소나 카드를 생성합니다.",
       "version": "1.0.0",
-      "path": "plugins/persona-builder",
-      "components": {
-        "agents": ["persona-architect", "customer-insights-partner"],
-        "commands": ["build-persona"],
-        "skills": ["persona-framework"]
-      }
+      "source": "./plugins/persona-builder"
     },
     {
       "name": "social-strategy",
       "description": "페르소나 기반 채널 선정 및 콘텐츠 전략을 수립합니다.",
       "version": "1.0.0",
-      "path": "plugins/social-strategy",
-      "components": {
-        "agents": ["social-strategy-director", "channel-analyst"],
-        "commands": ["plan-channels"],
-        "skills": ["channel-roadmap", "content-pillars"]
-      }
+      "source": "./plugins/social-strategy"
     },
     {
       "name": "content-creation",
       "description": "채널별 홍보 카피 및 스크립트를 생성합니다.",
       "version": "1.0.0",
-      "path": "plugins/content-creation",
-      "components": {
-        "agents": ["copy-strategist", "conversion-copywriter", "script-writer"],
-        "commands": ["generate-copy", "write-script"],
-        "skills": ["message-architecture", "hook-formulas"]
-      }
+      "source": "./plugins/content-creation"
     },
     {
       "name": "creative-production",
       "description": "실제 이미지와 비디오를 생성합니다. common 플러그인의 kie-image-generator, kie-video-generator 스킬을 활용합니다.",
       "version": "1.0.0",
-      "path": "plugins/creative-production",
-      "components": {
-        "agents": ["creative-director", "production-coordinator"],
-        "commands": ["create-image", "create-video"],
-        "skills": ["image-prompt-guide", "video-production"]
-      }
+      "source": "./plugins/creative-production"
     },
     {
       "name": "campaign-orchestration",
       "description": "전체 마케팅 워크플로우를 통합하고 순차 실행합니다.",
       "version": "1.0.0",
-      "path": "plugins/campaign-orchestration",
-      "components": {
-        "agents": ["campaign-director", "workflow-coordinator"],
-        "commands": ["run-full-pipeline", "run-phase"],
-        "skills": ["pipeline-framework"]
-      }
+      "source": "./plugins/campaign-orchestration"
     },
     {
       "name": "market-research",
       "description": "시장 분석 리포트 및 데이터 시각화를 생성합니다.",
       "version": "1.0.0",
-      "path": "plugins/market-research",
-      "components": {
-        "skills": ["analysis-reports", "diagram-generator"]
-      }
+      "source": "./plugins/market-research"
     }
   ],
   "categories": [
