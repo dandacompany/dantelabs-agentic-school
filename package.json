@@ -1,6 +1,6 @@
 {
   "name": "dantelabs-agentic-school",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "CLI tool for installing Dante Labs agentic plugins for Claude Code",
   "main": "cli/src/index.js",
   "type": "module",
