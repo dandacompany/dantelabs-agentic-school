@@ -55,8 +55,8 @@
 ### 실행 방법
 ```bash
 # 커맨드로 실행
-/analyze-market --industry "한국 프리미엄 커피 시장" --scope "2024-2034"
-/competitive-landscape --market "한국 커피 시장" --competitors "스타벅스,이디야,투썸"
+/market-research:analyze-market --industry "한국 프리미엄 커피 시장" --scope "2024-2034"
+/market-research:competitive-landscape --market "한국 커피 시장" --competitors "스타벅스,이디야,투썸"
 
 # Claude에게 직접 요청
 "한국 프리미엄 커피 시장 분석 리포트를 작성해줘. 2024-2034년 전망 포함해서."
@@ -321,7 +321,7 @@ Phase 0의 시장 리서치 결과를 기반으로, Dante Coffee의 **구체적�
 ### 실행 커맨드
 ```bash
 # 브랜드 분석 실행
-/analyze-brand --brand-doc "./dante-coffee-brand-brief.md"
+/brand-analytics:analyze-brand --brand-doc "./dante-coffee-brand-brief.md"
 ```
 
 > **Tip**: `--brand-doc` 옵션으로 브랜드 소개서 파일을 지정하면 자동으로 포지셔닝 분석이 수행됩니다.
@@ -391,7 +391,7 @@ Phase 0의 시장 리서치 결과를 기반으로, Dante Coffee의 **구체적�
 ### 실행 커맨드
 ```bash
 # 고객 세그먼트 설계
-/create-segments --brand-doc "./brand-strategy-brief.md"
+/customer-segmentation:create-segments --brand-doc "./brand-strategy-brief.md"
 ```
 
 ### Dante Coffee 세그먼트 정의
@@ -432,7 +432,7 @@ Phase 0의 시장 리서치 결과를 기반으로, Dante Coffee의 **구체적�
 ### 실행 커맨드
 ```bash
 # 페르소나 생성
-/build-persona --segment "가성비 헌터"
+/persona-builder:build-persona --segment "가성비 헌터"
 ```
 
 ### 페르소나 카드: "스마트 직장인 지현"
@@ -501,7 +501,7 @@ Phase 0의 시장 리서치 결과를 기반으로, Dante Coffee의 **구체적�
 ### 실행 커맨드
 ```bash
 # 채널 전략 수립
-/plan-channels --persona "김지현"
+/social-strategy:plan-channels --persona "김지현"
 ```
 
 ### 채널별 전략
@@ -550,10 +550,10 @@ Phase 0의 시장 리서치 결과를 기반으로, Dante Coffee의 **구체적�
 ### 실행 커맨드
 ```bash
 # 채널별 카피 생성
-/generate-copy --channel instagram --persona "김지현"
+/content-creation:generate-copy --channel instagram --persona "김지현"
 
 # 영상 스크립트 작성
-/write-script --type shorts --duration 30s
+/content-creation:write-script --type shorts --duration 30s
 ```
 
 ### 인스타그램 피드 카피
@@ -656,7 +656,7 @@ Phase 0의 시장 리서치 결과를 기반으로, Dante Coffee의 **구체적�
 ### 실행 커맨드
 ```bash
 # 크리에이티브 생성 (kie-image-generator 연동)
-/create-image --concept "커피 라이프스타일" --type lifestyle
+/creative-production:create-image --concept "커피 라이프스타일" --type lifestyle
 ```
 
 ### 이미지 생성 프롬프트 (AI 이미지 생성용)
@@ -756,7 +756,7 @@ Colors: High contrast, yellow highlights
 ### 실행 커맨드
 ```bash
 # 쇼츠 영상 생성 (kie-video-generator 연동)
-/create-video --concept "드립백 추출" --duration 15s
+/creative-production:create-video --concept "드립백 추출" --duration 15s
 ```
 
 ### 쇼츠 시리즈 기획안
@@ -813,11 +813,11 @@ Colors: High contrast, yellow highlights
 
 ```bash
 # 전체 캠페인 실행 (campaign-orchestration 플러그인)
-/run-full-pipeline --brand-doc "./dante-coffee-brand-brief.md"
+/campaign-orchestration:run-full-pipeline --brand-doc "./dante-coffee-brand-brief.md"
 
 # 또는 특정 단계만 실행
-/run-phase --phase 1  # 브랜드 분석만
-/run-phase --phase 5  # 콘텐츠 제작만
+/campaign-orchestration:run-phase --phase 1  # 브랜드 분석만
+/campaign-orchestration:run-phase --phase 5  # 콘텐츠 제작만
 ```
 
 ### 사용된 플러그인 및 에이전트 요약
