@@ -1,0 +1,9 @@
+{
+  "name": "shap-analysis",
+  "description": "SHAP(SHapley Additive exPlanations)를 사용하여 모델 예측을 설명하고 해석합니다.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Dante Labs",
+    "email": "datapod.k@gmail.com"
+  }
+}

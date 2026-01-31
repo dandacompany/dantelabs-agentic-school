@@ -6,16 +6,15 @@
 
 이 프로젝트는 **GTM Agents 스타일의 전략 에이전트**와 **실제 생성/분석 도구**를 통합하여, **엔드투엔드 비즈니스 자동화**를 제공합니다.
 
-현재 **마케팅 자동화** 플러그인이 구현되어 있으며, 향후 **데이터 분석**, **AI/ML**, **일반 비즈니스** 등으로 확장될 예정입니다.
+현재 **마케팅 자동화**(8개)와 **데이터 사이언스**(9개) 플러그인이 구현되어 있으며, 향후 **일반 비즈니스** 등으로 확장될 예정입니다.
 
 ## 지원 영역
 
-| 영역 | 상태 | 설명 |
-| --- | --- | --- |
-| 🎯 Marketing | ✅ 구현완료 | 브랜드 분석 → 크리에이티브 제작 |
-| 📊 Data Analytics | 🔜 예정 | 데이터 수집 → 시각화 → 인사이트 |
-| 🤖 AI/ML | 🔜 예정 | 모델 선택 → 학습 → 배포 |
-| 💼 Business Ops | 🔜 예정 | 워크플로우 → 자동화 → 리포팅 |
+| 영역 | 상태 | 설명 | 플러그인 수 |
+| --- | --- | --- | --- |
+| 🎯 Marketing | ✅ 구현완료 | 브랜드 분석 → 크리에이티브 제작 | 8개 |
+| 📊 Data Science | ✅ 구현완료 | 데이터 분석 → 모델 학습 → 배포 | 9개 |
+| 💼 Business Ops | 🔜 예정 | 워크플로우 → 자동화 → 리포팅 | - |
 
 ## 특징
 
@@ -24,6 +23,7 @@
 - **실행 커맨드**: 직접 실행 가능한 작업 커맨드
 - **전문 스킬**: 도메인 지식 및 프레임워크
 - **AI 생성 도구 내장**: kie-image-generator, kie-video-generator (common 플러그인)
+- **완전 자동화 파이프라인**: 엔드투엔드 자동화 (마케팅 6단계, 데이터 사이언스 10단계)
 
 ## 설치
 
@@ -86,9 +86,11 @@ npx dantelabs-agentic-school sample marketing --force
 
 ```text
 samples/
-└── marketing/
-    ├── dante-coffee-agentic-marketing-scenario.md  # 마케팅 시나리오 가이드
-    └── dante-coffee-brand-brief.md                 # 브랜드 브리프 예시
+├── marketing/
+│   ├── dante-coffee-agentic-marketing-scenario.md  # 마케팅 시나리오 가이드
+│   └── dante-coffee-brand-brief.md                 # 브랜드 브리프 예시
+└── datascience/
+    └── creditcard.csv                              # 신용카드 사기 탐지 데이터셋
 ```
 
 > **Tip**: 다운로드한 브랜드 브리프를 사용하여 `/analyze-brand --brand-doc ./samples/marketing/dante-coffee-brand-brief.md` 명령어로 전체 파이프라인을 실행해볼 수 있습니다.
@@ -187,10 +189,15 @@ Claude Code 실행 후 `/help` 명령어로 설치된 커맨드를 확인할 수
 # Claude Code 내에서
 /help
 
-# 설치된 커맨드 예시
+# 설치된 커맨드 예시 (마케팅)
 /analyze-brand --brand-doc ./brand-brief.md
 /create-segments
 /build-persona --segment "워라밸 직장인"
+
+# 설치된 커맨드 예시 (데이터 사이언스)
+/profile-data --data-path "./data/creditcard.csv"
+/train-model --algorithm xgboost
+/deploy-model --model-path "./models/model.pkl"
 ```
 
 ---
@@ -302,10 +309,10 @@ python ~/.claude/skills/kie-video-generator/scripts/generate_video.py --credits
 
 | 항목 | 개수 |
 | --- | --- |
-| 플러그인 | 9개 (common 1 + marketing 8) |
+| 플러그인 | 18개 (common 1 + marketing 8 + data-science 9) |
 | 에이전트 | 15개 |
-| 커맨드 | 10개 |
-| 스킬 | 19개 (common 6 + marketing 13) |
+| 커맨드 | 19개 |
+| 스킬 | 28개 (common 6 + marketing 13 + data-science 9) |
 
 ## 플러그인 목록
 
@@ -474,40 +481,181 @@ Brand Document
 Complete Campaign Assets
 ```
 
-## 에이전트 트리거 예시
+---
 
-| 요청 | 활성화 에이전트 |
-| --- | --- |
-| "브랜드 분석해줘" | brand-strategist |
-| "고객 세그먼트 나눠줘" | segmentation-architect |
-| "페르소나 만들어줘" | persona-architect |
-| "SNS 전략 수립해줘" | social-strategy-director |
-| "인스타그램 카피 써줘" | conversion-copywriter |
-| "영상 스크립트 작성해줘" | script-writer |
-| "제품 이미지 만들어줘" | creative-director |
+## 📊 Data Science Plugins ⭐ NEW
+
+데이터 분석부터 모델 학습, 배포까지 10단계 자동화 파이프라인을 제공합니다.
+
+### 기본 파이프라인 (4개)
+
+| # | 플러그인 | 설명 | 주요 기능 |
+| --- | --- | --- | --- |
+| 1 | **data-profiling** | 데이터 품질 검증 및 EDA | ydata-profiling, A4 전략 레포트 |
+| 2 | **feature-engineering** | 특성 변환 및 전처리 | RobustScaler, 시간 특성, 파이프라인 저장 |
+| 3 | **imbalance-handling** | 클래스 불균형 처리 | SMOTE, ADASYN, BorderlineSMOTE |
+| 4 | **model-selection** | 모델 학습 및 평가 | XGBoost, LightGBM, Random Forest |
+
+### 고급 파이프라인 (5개) ⭐
+
+| # | 플러그인 | 설명 | 주요 기능 |
+| --- | --- | --- | --- |
+| 5 | **hyperparameter-tuning** | 자동 하이퍼파라미터 최적화 | Optuna TPE, Median Pruner, +2-4% 성능 향상 |
+| 6 | **model-evaluation** | 모델 성능 심층 분석 | Feature Importance, Learning Curves, CV |
+| 7 | **shap-analysis** | 예측 설명 및 해석 | SHAP Values, Waterfall Plot, Force Plot |
+| 8 | **model-monitoring** | 프로덕션 모델 추적 | Data Drift (PSI, KS), Alert System |
+| 9 | **model-deployment** | API 배포 | FastAPI, Swagger UI, Docker |
+
+### 파이프라인 구조
+
+```text
+Raw Data
+    ↓
+1️⃣  Data Profiling (HTML Report)
+    ↓
+2️⃣  EDA Analysis (A4 Strategy Report)
+    ↓
+3️⃣  Feature Engineering (Scaling, Time Features)
+    ↓
+4️⃣  Imbalance Handling (SMOTE)
+    ↓
+5️⃣  Model Training (XGBoost, LightGBM, RF)
+    ↓
+6️⃣  Hyperparameter Tuning (Optuna, 50-100 trials) ⭐
+    ↓
+7️⃣  Model Evaluation (Feature Importance, Curves) ⭐
+    ↓
+8️⃣  SHAP Analysis (Prediction Explanation) ⭐
+    ↓
+9️⃣  Model Monitoring (Drift Detection, Alerts) ⭐
+    ↓
+🔟 Model Deployment (FastAPI, Docker) ⭐
+    ↓
+Production API Server
+```
+
+### 사용 예시
+
+#### 프로젝트 초기화
+
+```bash
+# 새 데이터 사이언스 프로젝트 생성
+python scripts/init_project.py --name my-ml-project
+
+# 데이터 복사
+cp /path/to/data.csv projects/my-ml-project/data/raw/
+```
+
+#### 기본 파이프라인 (1-4단계)
+
+```bash
+# 1. 데이터 프로파일링
+/profile-data --data-path "projects/my-ml-project/data/raw/data.csv" --target-column "target"
+
+# 2. EDA 분석
+/analyze-profile --data-path "projects/my-ml-project/data/raw/data.csv" --target-column "target"
+
+# 3. 특성 엔지니어링
+/engineer-features --data-path "projects/my-ml-project/data/raw/data.csv" --target-column "target"
+
+# 4. 불균형 처리
+/balance-data \
+  --X-path "projects/my-ml-project/data/processed/data_processed_X.csv" \
+  --y-path "projects/my-ml-project/data/processed/data_processed_y.csv" \
+  --method smote
+```
+
+#### 고급 파이프라인 (5-10단계) ⭐
+
+```bash
+# 5. 모델 학습 (베이스라인)
+/train-model \
+  --X-train-path "projects/my-ml-project/data/processed/X_train_balanced.csv" \
+  --y-train-path "projects/my-ml-project/data/processed/y_train_balanced.csv" \
+  --X-test-path "projects/my-ml-project/data/processed/X_test.csv" \
+  --y-test-path "projects/my-ml-project/data/processed/y_test.csv" \
+  --algorithm xgboost
+
+# 6. 하이퍼파라미터 튜닝
+/tune-hyperparameters \
+  --X-train-path "projects/my-ml-project/data/processed/X_train_balanced.csv" \
+  --y-train-path "projects/my-ml-project/data/processed/y_train_balanced.csv" \
+  --n-trials 50
+
+# 7. 모델 평가
+/evaluate-model \
+  --model-path "projects/my-ml-project/outputs/models/xgboost_tuned_model.pkl" \
+  --X-test-path "projects/my-ml-project/data/processed/X_test.csv" \
+  --y-test-path "projects/my-ml-project/data/processed/y_test.csv"
+
+# 8. SHAP 분석
+/analyze-shap \
+  --model-path "projects/my-ml-project/outputs/models/xgboost_tuned_model.pkl" \
+  --X-test-path "projects/my-ml-project/data/processed/X_test.csv"
+
+# 9. 모델 모니터링
+/monitor-model \
+  --model-path "projects/my-ml-project/outputs/models/xgboost_tuned_model.pkl" \
+  --reference-data "projects/my-ml-project/data/processed/X_train_balanced.csv" \
+  --current-data "projects/my-ml-project/data/production/prod_data.csv"
+
+# 10. API 배포
+/deploy-model \
+  --model-path "projects/my-ml-project/outputs/models/xgboost_tuned_model.pkl" \
+  --X-sample-path "projects/my-ml-project/data/processed/X_train_balanced.csv"
+```
+
+### 성능 개선 과정
+
+**신용카드 사기 탐지 예시** (284,807건, 1:578 불균형)
+
+| 단계 | F1-Score | PR-AUC | 개선 |
+| --- | --- | --- | --- |
+| 베이스라인 (XGBoost) | 0.83 | 0.87 | - |
+| + 하이퍼파라미터 튜닝 | 0.86 | 0.89 | +3.6% |
+| + Feature Selection | 0.87 | 0.90 | +4.8% |
+| + Threshold 최적화 | 0.88 | 0.91 | +6.0% |
+
+### 프로젝트 구조
+
+```text
+projects/{project-name}/
+├── data/
+│   ├── raw/              # 원본 데이터
+│   ├── processed/        # 전처리 데이터
+│   └── production/       # 프로덕션 데이터 (모니터링용)
+├── outputs/
+│   ├── models/           # 학습/튜닝 모델
+│   ├── reports/          # HTML/Markdown 리포트
+│   ├── evaluations/      # 평가 시각화
+│   ├── shap/            # SHAP 분석
+│   └── monitoring/       # Drift 리포트
+├── deployment/          # FastAPI 서버
+│   ├── app.py
+│   ├── Dockerfile
+│   └── docker-compose.yml
+└── notebooks/           # Jupyter 노트북
+```
+
+### 활용 시나리오
+
+| 시나리오 | 소요 시간 | 예상 성능 | 산출물 |
+| --- | --- | --- | --- |
+| **신속 프로토타입** | 3시간 | F1 0.80-0.85 | 베이스라인 모델 |
+| **프로덕션 모델** | 3일 | F1 0.85-0.90 | 튜닝 모델 + 평가 |
+| **엔터프라이즈** | 1주 | F1 0.90+ | API + 모니터링 + 문서 |
+
+### 상세 가이드
+
+- [기본 파이프라인 가이드](./DATA_SCIENCE_PIPELINE.md)
+- [고급 파이프라인 가이드](./ADVANCED_DATA_SCIENCE_PIPELINE.md)
+- [프로젝트 구조 가이드](./PROJECTS.md)
 
 ---
 
 ## 🔜 Coming Soon
 
-## 📊 Data Analytics Plugins (예정)
-
-데이터 수집부터 시각화, 인사이트 도출까지의 파이프라인
-
-- data-collection: 데이터 수집 및 전처리
-- exploratory-analysis: 탐색적 데이터 분석
-- visualization: 대시보드 및 시각화
-- insight-generation: 인사이트 도출
-
-## 🤖 AI/ML Plugins (예정)
-
-AI 모델 선택부터 학습, 배포까지의 파이프라인
-
-- model-selection: 모델 선택 및 평가
-- training-pipeline: 학습 파이프라인
-- deployment: 모델 배포
-
-## 💼 Business Ops Plugins (예정)
+### 💼 Business Ops Plugins (예정)
 
 비즈니스 워크플로우 자동화
 
@@ -521,6 +669,7 @@ AI 모델 선택부터 학습, 배포까지의 파이프라인
 
 - Claude Code CLI
 - Node.js 18.0.0 이상 (NPX CLI용)
+- Python 3.8+ (데이터 사이언스 플러그인)
 
 > 이미지/비디오 생성 스킬(`kie-image-generator`, `kie-video-generator`)은 common 플러그인에 포함되어 있습니다.
 > API 키 설정은 [auth-manager 스킬](#auth-manager-스킬) 참조

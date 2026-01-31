@@ -1,0 +1,9 @@
+{
+  "name": "feature-engineering",
+  "description": "데이터 전처리 및 특성 엔지니어링을 수행하여 모델 학습에 적합한 데이터를 생성합니다.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Dante Labs",
+    "email": "datapod.k@gmail.com"
+  }
+}

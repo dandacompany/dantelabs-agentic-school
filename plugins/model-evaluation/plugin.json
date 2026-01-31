@@ -1,0 +1,9 @@
+{
+  "name": "model-evaluation",
+  "description": "모델 성능 분석 및 시각화 플러그인입니다.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Dante Labs",
+    "email": "datapod.k@gmail.com"
+  }
+}

@@ -1,0 +1,18 @@
+# Feature Engineering Skill Dependencies
+
+# Core Data Processing
+pandas>=2.0.0
+numpy>=1.24.0
+
+# Machine Learning Preprocessing
+scikit-learn>=1.3.0
+
+# Model Serialization
+joblib>=1.3.0
+
+# Installation:
+# Using uv (recommended - 10-100x faster than pip):
+#   uv pip install --system -r requirements.txt
+#
+# Using pip:
+#   pip install -r requirements.txt

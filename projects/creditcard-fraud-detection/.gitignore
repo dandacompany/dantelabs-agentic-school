@@ -1,0 +1,26 @@
+# Data files
+data/raw/*.csv
+data/raw/*.xlsx
+data/raw/*.parquet
+data/processed/*.csv
+data/interim/*.csv
+*.zip
+
+# Model files
+outputs/models/*.pkl
+outputs/models/*.joblib
+outputs/models/*.h5
+
+# Large reports
+outputs/reports/*.html
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+**/.ipynb_checkpoints/
+
+# Python
+__pycache__/
+*.py[cod]
+
+# OS
+.DS_Store

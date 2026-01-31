@@ -1,0 +1,21 @@
+# SHAP Analysis Requirements
+# 설치: uv pip install -r requirements.txt
+
+# Core
+pandas>=2.0.0
+numpy>=1.24.0
+scikit-learn>=1.3.0
+
+# SHAP
+shap>=0.43.0
+
+# Visualization
+matplotlib>=3.7.0
+seaborn>=0.12.0
+
+# Model Loading
+joblib>=1.3.0
+
+# Optional: Advanced models
+xgboost>=2.0.0
+lightgbm>=4.0.0

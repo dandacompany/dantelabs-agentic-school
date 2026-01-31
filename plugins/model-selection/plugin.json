@@ -1,0 +1,9 @@
+{
+  "name": "model-selection",
+  "description": "머신러닝 모델 학습 및 평가를 수행합니다.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Dante Labs",
+    "email": "datapod.k@gmail.com"
+  }
+}

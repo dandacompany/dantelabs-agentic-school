@@ -1,0 +1,45 @@
+# Data files
+data/raw/*.csv
+data/processed/*.csv
+data/interim/*.csv
+*.zip
+
+# Model files
+outputs/models/*.pkl
+outputs/models/*.joblib
+outputs/models/*.h5
+outputs/models/*.pt
+
+# Reports and figures
+outputs/reports/*.pdf
+outputs/reports/*.html
+outputs/figures/*.png
+outputs/figures/*.jpg
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+**/.ipynb_checkpoints/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log

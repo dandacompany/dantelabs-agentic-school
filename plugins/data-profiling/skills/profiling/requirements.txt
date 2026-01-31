@@ -1,0 +1,30 @@
+# Data Profiling Skill Dependencies
+
+# Core Data Processing
+pandas>=2.0.0
+
+# Automated EDA and Profiling
+ydata-profiling>=4.6.0
+
+# Alternative (deprecated)
+# pandas-profiling>=3.6.0
+
+# Note: ydata-profiling includes the following dependencies automatically:
+# - numpy
+# - scipy
+# - matplotlib
+# - seaborn
+# - jinja2
+# - htmlmin
+# - phik
+# - requests
+# - visions
+# - multimethod
+# - pydantic
+
+# Installation:
+# Using uv (recommended - 10-100x faster than pip):
+#   uv pip install -r requirements.txt
+#
+# Using pip:
+#   pip install -r requirements.txt

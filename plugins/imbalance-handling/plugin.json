@@ -1,0 +1,9 @@
+{
+  "name": "imbalance-handling",
+  "description": "클래스 불균형 문제를 해결하여 모델 학습 성능을 향상시킵니다.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Dante Labs",
+    "email": "datapod.k@gmail.com"
+  }
+}

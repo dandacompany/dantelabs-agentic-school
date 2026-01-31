@@ -1,0 +1,9 @@
+{
+  "name": "data-profiling",
+  "description": "데이터 품질 검증 및 자동화된 탐색적 데이터 분석(EDA)을 수행합니다.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Dante Labs",
+    "email": "datapod.k@gmail.com"
+  }
+}

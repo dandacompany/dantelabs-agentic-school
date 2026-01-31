@@ -1,0 +1,9 @@
+{
+  "name": "model-monitoring",
+  "description": "프로덕션 환경에서 모델 성능을 모니터링하고 데이터 드리프트를 탐지합니다.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Dante Labs",
+    "email": "datapod.k@gmail.com"
+  }
+}
