@@ -682,7 +682,7 @@ MIT License
 
 Dante Labs
 
-- Website: [dante-datalab.com](https://dante-datalab.com)
+- Website: [dante-labs.com](https://dante-labs.com)
 - YouTube: [@dante-labs](https://youtube.com/@dante-labs)
 - Email: <datapod.k@gmail.com>
 - Discord: [Dante Labs Community](https://discord.com/invite/rXyy5e9ujs)
