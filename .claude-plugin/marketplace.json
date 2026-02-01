@@ -16,64 +16,133 @@
       "name": "common",
       "description": "공통 유틸리티 스킬 모음. 인증 관리, 문서 제작 도구(PPTX, PDF, DOCX), 이미지/비디오 생성(Kie.ai) 등 여러 플러그인에서 공통으로 사용하는 기능을 제공합니다.",
       "version": "1.0.0",
-      "source": "./plugins/common"
+      "source": "./plugins/common",
+      "category": "common"
     },
     {
       "name": "brand-analytics",
       "description": "브랜드 소개서를 분석하여 포지셔닝, SWOT, 경쟁사 분석을 수행합니다.",
       "version": "1.0.0",
-      "source": "./plugins/brand-analytics"
+      "source": "./plugins/marketing/brand-analytics",
+      "category": "marketing"
     },
     {
       "name": "customer-segmentation",
       "description": "데이터 기반 고객 세그먼트를 설계하고 정의합니다.",
       "version": "1.0.0",
-      "source": "./plugins/customer-segmentation"
+      "source": "./plugins/marketing/customer-segmentation",
+      "category": "marketing"
     },
     {
       "name": "persona-builder",
       "description": "타겟 세그먼트의 상세 페르소나 카드를 생성합니다.",
       "version": "1.0.0",
-      "source": "./plugins/persona-builder"
+      "source": "./plugins/marketing/persona-builder",
+      "category": "marketing"
     },
     {
       "name": "social-strategy",
       "description": "페르소나 기반 채널 선정 및 콘텐츠 전략을 수립합니다.",
       "version": "1.0.0",
-      "source": "./plugins/social-strategy"
+      "source": "./plugins/marketing/social-strategy",
+      "category": "marketing"
     },
     {
       "name": "content-creation",
       "description": "채널별 홍보 카피 및 스크립트를 생성합니다.",
       "version": "1.0.0",
-      "source": "./plugins/content-creation"
+      "source": "./plugins/marketing/content-creation",
+      "category": "marketing"
     },
     {
       "name": "creative-production",
       "description": "실제 이미지와 비디오를 생성합니다. common 플러그인의 kie-image-generator, kie-video-generator 스킬을 활용합니다.",
       "version": "1.0.0",
-      "source": "./plugins/creative-production"
+      "source": "./plugins/marketing/creative-production",
+      "category": "marketing"
     },
     {
       "name": "campaign-orchestration",
       "description": "전체 마케팅 워크플로우를 통합하고 순차 실행합니다.",
       "version": "1.0.0",
-      "source": "./plugins/campaign-orchestration"
+      "source": "./plugins/marketing/campaign-orchestration",
+      "category": "marketing"
     },
     {
       "name": "market-research",
       "description": "시장 규모/성장률 분석, Porter's 5 Forces, 경쟁 환경 분석 등 종합적인 시장 조사를 수행합니다. TAM/SAM/SOM 모델링, PESTLE 분석, 경쟁사 포지셔닝 맵 등을 포함합니다.",
       "version": "1.0.0",
-      "source": "./plugins/market-research"
+      "source": "./plugins/marketing/market-research",
+      "category": "marketing"
+    },
+    {
+      "name": "data-profiling",
+      "description": "데이터 프로파일링 및 탐색적 데이터 분석(EDA)을 수행합니다. ydata-profiling 기반 자동 리포트 생성 및 인터랙티브 분석을 제공합니다.",
+      "version": "1.0.0",
+      "source": "./plugins/data-science/data-profiling",
+      "category": "data-science"
+    },
+    {
+      "name": "feature-engineering",
+      "description": "Feature Engineering 및 데이터 전처리 파이프라인을 구축합니다. 스케일링, 인코딩, Feature 생성 등을 자동화합니다.",
+      "version": "1.0.0",
+      "source": "./plugins/data-science/feature-engineering",
+      "category": "data-science"
+    },
+    {
+      "name": "imbalance-handling",
+      "description": "클래스 불균형 문제를 해결합니다. SMOTE, ADASYN 등 다양한 리샘플링 기법을 제공합니다.",
+      "version": "1.0.0",
+      "source": "./plugins/data-science/imbalance-handling",
+      "category": "data-science"
+    },
+    {
+      "name": "model-selection",
+      "description": "머신러닝 모델 학습 및 선택을 수행합니다. XGBoost, LightGBM, Random Forest 등 주요 알고리즘을 지원합니다.",
+      "version": "1.0.0",
+      "source": "./plugins/data-science/model-selection",
+      "category": "data-science"
+    },
+    {
+      "name": "hyperparameter-tuning",
+      "description": "Optuna 기반 하이퍼파라미터 최적화를 수행합니다. TPE Sampler, Median Pruner를 활용한 효율적인 튜닝을 제공합니다.",
+      "version": "1.0.0",
+      "source": "./plugins/data-science/hyperparameter-tuning",
+      "category": "data-science"
+    },
+    {
+      "name": "model-evaluation",
+      "description": "모델 성능 평가 및 시각화를 수행합니다. Feature Importance, Learning Curves, Cross-Validation 등을 제공합니다.",
+      "version": "1.0.0",
+      "source": "./plugins/data-science/model-evaluation",
+      "category": "data-science"
+    },
+    {
+      "name": "shap-analysis",
+      "description": "SHAP 기반 모델 해석성 분석을 수행합니다. Summary Plot, Waterfall Plot, Force Plot 등을 생성합니다.",
+      "version": "1.0.0",
+      "source": "./plugins/data-science/shap-analysis",
+      "category": "data-science"
+    },
+    {
+      "name": "model-monitoring",
+      "description": "모델 성능 모니터링 및 데이터 드리프트 감지를 수행합니다. PSI, KS Test 기반 알림 시스템을 제공합니다.",
+      "version": "1.0.0",
+      "source": "./plugins/data-science/model-monitoring",
+      "category": "data-science"
+    },
+    {
+      "name": "model-deployment",
+      "description": "FastAPI 기반 REST API 모델 배포를 자동화합니다. Docker 컨테이너화 및 Swagger UI 문서를 제공합니다.",
+      "version": "1.0.0",
+      "source": "./plugins/data-science/model-deployment",
+      "category": "data-science"
     }
   ],
   "categories": [
-    "agentic-business",
+    "common",
     "marketing",
-    "data-analytics",
-    "ai-ml",
-    "business-ops",
-    "automation"
+    "data-science"
   ],
   "tags": [
     "agentic-business",
@@ -85,7 +154,17 @@
     "content-generation",
     "image-generation",
     "video-generation",
-    "data-analysis",
+    "data-science",
+    "machine-learning",
+    "data-profiling",
+    "feature-engineering",
+    "model-training",
+    "hyperparameter-tuning",
+    "model-evaluation",
+    "shap-analysis",
+    "model-monitoring",
+    "model-deployment",
+    "imbalance-handling",
     "workflow-automation"
   ]
 }

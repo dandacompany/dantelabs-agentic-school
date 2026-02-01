@@ -384,11 +384,11 @@ docker-compose up -d
 
 - [기본 파이프라인 가이드](./DATA_SCIENCE_PIPELINE.md)
 - [프로젝트 구조 가이드](./PROJECTS.md)
-- [hyperparameter-tuning 플러그인](./plugins/hyperparameter-tuning/README.md)
-- [model-evaluation 플러그인](./plugins/model-evaluation/README.md)
-- [shap-analysis 플러그인](./plugins/shap-analysis/README.md)
-- [model-monitoring 플러그인](./plugins/model-monitoring/README.md)
-- [model-deployment 플러그인](./plugins/model-deployment/README.md)
+- [hyperparameter-tuning 플러그인](./plugins/data-science/hyperparameter-tuning/README.md)
+- [model-evaluation 플러그인](./plugins/data-science/model-evaluation/README.md)
+- [shap-analysis 플러그인](./plugins/data-science/shap-analysis/README.md)
+- [model-monitoring 플러그인](./plugins/data-science/model-monitoring/README.md)
+- [model-deployment 플러그인](./plugins/data-science/model-deployment/README.md)
 
 ## 🎓 학습 경로
 

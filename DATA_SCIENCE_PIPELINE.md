@@ -52,7 +52,7 @@ cp /path/to/your/data.csv projects/my-ml-project/data/raw/
 
 #### 2️⃣ 데이터 프로파일링
 ```bash
-python plugins/data-profiling/skills/profiling/scripts/generate_profile.py \
+python plugins/data-science/data-profiling/skills/profiling/scripts/generate_profile.py \
   --data-path "projects/my-ml-project/data/raw/data.csv" \
   --target-column "target" \
   --output-dir "projects/my-ml-project/outputs/reports" \
@@ -70,7 +70,7 @@ python plugins/data-profiling/skills/profiling/scripts/generate_profile.py \
 
 #### 3️⃣ EDA 분석
 ```bash
-python plugins/data-profiling/skills/profiling/scripts/analyze_eda.py \
+python plugins/data-science/data-profiling/skills/profiling/scripts/analyze_eda.py \
   --data-path "projects/my-ml-project/data/raw/data.csv" \
   --target-column "target" \
   --output-dir "projects/my-ml-project/outputs/reports"
@@ -86,7 +86,7 @@ python plugins/data-profiling/skills/profiling/scripts/analyze_eda.py \
 
 #### 4️⃣ 특성 엔지니어링
 ```bash
-python plugins/feature-engineering/skills/feature-engineering/scripts/transform_features.py \
+python plugins/data-science/feature-engineering/skills/feature-engineering/scripts/transform_features.py \
   --data-path "projects/my-ml-project/data/raw/data.csv" \
   --target-column "target" \
   --time-features "hour,day,cyclical" \
@@ -106,7 +106,7 @@ python plugins/feature-engineering/skills/feature-engineering/scripts/transform_
 
 #### 5️⃣ 클래스 불균형 처리
 ```bash
-python plugins/imbalance-handling/skills/imbalance-handling/scripts/balance_data.py \
+python plugins/data-science/imbalance-handling/skills/imbalance-handling/scripts/balance_data.py \
   --X-path "projects/my-ml-project/data/processed/data_processed_X.csv" \
   --y-path "projects/my-ml-project/data/processed/data_processed_y.csv" \
   --method smote \
@@ -129,7 +129,7 @@ python plugins/imbalance-handling/skills/imbalance-handling/scripts/balance_data
 
 #### 6️⃣ 모델 학습
 ```bash
-python plugins/model-selection/skills/model-selection/scripts/train_model.py \
+python plugins/data-science/model-selection/skills/model-selection/scripts/train_model.py \
   --X-train-path "projects/my-ml-project/data/processed/X_train_balanced.csv" \
   --y-train-path "projects/my-ml-project/data/processed/y_train_balanced.csv" \
   --X-test-path "projects/my-ml-project/data/processed/X_test.csv" \
@@ -165,26 +165,26 @@ cp samples/datascience/data/raw/creditcard.csv \
    projects/creditcard-fraud-detection/data/raw/
 
 # 2. 프로파일링 (약 5분)
-python plugins/data-profiling/skills/profiling/scripts/generate_profile.py \
+python plugins/data-science/data-profiling/skills/profiling/scripts/generate_profile.py \
   --data-path "projects/creditcard-fraud-detection/data/raw/creditcard.csv" \
   --target-column "Class" \
   --output-dir "projects/creditcard-fraud-detection/outputs/reports"
 
 # 3. EDA 분석
-python plugins/data-profiling/skills/profiling/scripts/analyze_eda.py \
+python plugins/data-science/data-profiling/skills/profiling/scripts/analyze_eda.py \
   --data-path "projects/creditcard-fraud-detection/data/raw/creditcard.csv" \
   --target-column "Class" \
   --output-dir "projects/creditcard-fraud-detection/outputs/reports"
 
 # 4. 특성 엔지니어링
-python plugins/feature-engineering/skills/feature-engineering/scripts/transform_features.py \
+python plugins/data-science/feature-engineering/skills/feature-engineering/scripts/transform_features.py \
   --data-path "projects/creditcard-fraud-detection/data/raw/creditcard.csv" \
   --target-column "Class" \
   --time-features "hour,day,cyclical" \
   --output-dir "projects/creditcard-fraud-detection/data/processed"
 
 # 5. 불균형 처리 (1:578 → 1:10)
-python plugins/imbalance-handling/skills/imbalance-handling/scripts/balance_data.py \
+python plugins/data-science/imbalance-handling/skills/imbalance-handling/scripts/balance_data.py \
   --X-path "projects/creditcard-fraud-detection/data/processed/creditcard_processed_X.csv" \
   --y-path "projects/creditcard-fraud-detection/data/processed/creditcard_processed_y.csv" \
   --method smote \
@@ -192,7 +192,7 @@ python plugins/imbalance-handling/skills/imbalance-handling/scripts/balance_data
   --output-dir "projects/creditcard-fraud-detection/data/processed"
 
 # 6. 모델 학습 (XGBoost)
-python plugins/model-selection/skills/model-selection/scripts/train_model.py \
+python plugins/data-science/model-selection/skills/model-selection/scripts/train_model.py \
   --X-train-path "projects/creditcard-fraud-detection/data/processed/X_train_balanced.csv" \
   --y-train-path "projects/creditcard-fraud-detection/data/processed/y_train_balanced.csv" \
   --X-test-path "projects/creditcard-fraud-detection/data/processed/X_test.csv" \
@@ -322,10 +322,10 @@ Actual 1      15      83    (84.7% Recall)
 ## 📚 관련 문서
 
 - [프로젝트 구조 가이드](./PROJECTS.md)
-- [data-profiling 플러그인](./plugins/data-profiling/README.md)
-- [feature-engineering 플러그인](./plugins/feature-engineering/README.md)
-- [imbalance-handling 플러그인](./plugins/imbalance-handling/README.md)
-- [model-selection 플러그인](./plugins/model-selection/README.md)
+- [data-profiling 플러그인](./plugins/data-science/data-profiling/README.md)
+- [feature-engineering 플러그인](./plugins/data-science/feature-engineering/README.md)
+- [imbalance-handling 플러그인](./plugins/data-science/imbalance-handling/README.md)
+- [model-selection 플러그인](./plugins/data-science/model-selection/README.md)
 
 ## 🔗 다음 단계
 
