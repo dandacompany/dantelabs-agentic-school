@@ -6,11 +6,19 @@
 
 ```
 dantelabs-agentic-school/
-├── plugins/                    # 재사용 가능한 플러그인
-│   ├── data-profiling/
-│   ├── feature-engineering/
-│   ├── imbalance-handling/
-│   └── model-selection/
+├── plugins/                    # 재사용 가능한 플러그인 (카테고리별 구성)
+│   ├── common/                 # 공통 유틸리티
+│   ├── marketing/              # 마케팅 플러그인 (8개)
+│   └── data-science/           # 데이터 사이언스 플러그인 (9개)
+│       ├── data-profiling/
+│       ├── feature-engineering/
+│       ├── imbalance-handling/
+│       ├── model-selection/
+│       ├── hyperparameter-tuning/
+│       ├── model-evaluation/
+│       ├── shap-analysis/
+│       ├── model-monitoring/
+│       └── model-deployment/
 │
 ├── projects/                   # 분석 프로젝트들 (주제별)
 │   ├── creditcard-fraud-detection/
@@ -84,7 +92,7 @@ cp /path/to/your/data.csv projects/my-analysis-project/data/raw/
 
 #### Step 1: 프로파일링
 ```bash
-python plugins/data-profiling/skills/profiling/scripts/generate_profile.py \
+python plugins/data-science/data-profiling/skills/profiling/scripts/generate_profile.py \
   --data-path "projects/my-analysis-project/data/raw/data.csv" \
   --target-column "target" \
   --output-dir "projects/my-analysis-project/outputs/reports"
@@ -92,7 +100,7 @@ python plugins/data-profiling/skills/profiling/scripts/generate_profile.py \
 
 #### Step 2: EDA 분석
 ```bash
-python plugins/data-profiling/skills/profiling/scripts/analyze_eda.py \
+python plugins/data-science/data-profiling/skills/profiling/scripts/analyze_eda.py \
   --data-path "projects/my-analysis-project/data/raw/data.csv" \
   --target-column "target" \
   --output-dir "projects/my-analysis-project/outputs/reports"
@@ -100,7 +108,7 @@ python plugins/data-profiling/skills/profiling/scripts/analyze_eda.py \
 
 #### Step 3: 특성 엔지니어링
 ```bash
-python plugins/feature-engineering/skills/feature-engineering/scripts/transform_features.py \
+python plugins/data-science/feature-engineering/skills/feature-engineering/scripts/transform_features.py \
   --data-path "projects/my-analysis-project/data/raw/data.csv" \
   --target-column "target" \
   --output-dir "projects/my-analysis-project/data/processed"
@@ -108,7 +116,7 @@ python plugins/feature-engineering/skills/feature-engineering/scripts/transform_
 
 #### Step 4: 불균형 처리
 ```bash
-python plugins/imbalance-handling/skills/imbalance-handling/scripts/balance_data.py \
+python plugins/data-science/imbalance-handling/skills/imbalance-handling/scripts/balance_data.py \
   --X-path "projects/my-analysis-project/data/processed/data_processed_X.csv" \
   --y-path "projects/my-analysis-project/data/processed/data_processed_y.csv" \
   --method smote \
@@ -117,7 +125,7 @@ python plugins/imbalance-handling/skills/imbalance-handling/scripts/balance_data
 
 #### Step 5: 모델 학습
 ```bash
-python plugins/model-selection/skills/model-selection/scripts/train_model.py \
+python plugins/data-science/model-selection/skills/model-selection/scripts/train_model.py \
   --X-train-path "projects/my-analysis-project/data/processed/X_train_balanced.csv" \
   --y-train-path "projects/my-analysis-project/data/processed/y_train_balanced.csv" \
   --X-test-path "projects/my-analysis-project/data/processed/X_test.csv" \
