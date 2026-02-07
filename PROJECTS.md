@@ -9,16 +9,18 @@ dantelabs-agentic-school/
 ├── plugins/                    # 재사용 가능한 플러그인 (카테고리별 구성)
 │   ├── common/                 # 공통 유틸리티
 │   ├── marketing/              # 마케팅 플러그인 (8개)
-│   └── data-science/           # 데이터 사이언스 플러그인 (9개)
-│       ├── data-profiling/
-│       ├── feature-engineering/
-│       ├── imbalance-handling/
-│       ├── model-selection/
-│       ├── hyperparameter-tuning/
-│       ├── model-evaluation/
-│       ├── shap-analysis/
-│       ├── model-monitoring/
-│       └── model-deployment/
+│   ├── data-science/           # 데이터 사이언스 플러그인 (9개)
+│   │   ├── data-profiling/
+│   │   ├── feature-engineering/
+│   │   ├── imbalance-handling/
+│   │   ├── model-selection/
+│   │   ├── hyperparameter-tuning/
+│   │   ├── model-evaluation/
+│   │   ├── shap-analysis/
+│   │   ├── model-monitoring/
+│   │   └── model-deployment/
+│   └── gcp/                    # GCP 클라우드 플러그인 (1개)
+│       └── gcp-openclaw/
 │
 ├── projects/                   # 분석 프로젝트들 (주제별)
 │   ├── creditcard-fraud-detection/

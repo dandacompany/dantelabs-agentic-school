@@ -137,12 +137,20 @@
       "version": "1.0.0",
       "source": "./plugins/data-science/model-deployment",
       "category": "data-science"
+    },
+    {
+      "name": "gcp-openclaw",
+      "description": "GCP VM 인스턴스에 OpenClaw를 배포하는 가이드 및 자동화 도구",
+      "version": "1.0.0",
+      "source": "./plugins/gcp/gcp-openclaw",
+      "category": "gcp"
     }
   ],
   "categories": [
     "common",
     "marketing",
-    "data-science"
+    "data-science",
+    "gcp"
   ],
   "tags": [
     "agentic-business",
@@ -165,6 +173,9 @@
     "model-monitoring",
     "model-deployment",
     "imbalance-handling",
-    "workflow-automation"
+    "workflow-automation",
+    "gcp",
+    "openclaw",
+    "deployment"
   ]
 }

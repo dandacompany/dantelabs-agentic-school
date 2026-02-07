@@ -81,3 +81,5 @@ coverage/
 logs/
 tmp/
 temp/
+
+class/

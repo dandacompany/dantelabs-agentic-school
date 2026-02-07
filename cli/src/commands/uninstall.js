@@ -6,6 +6,7 @@ import { existsSync } from 'fs';
 
 import { getMarketplaceConfig } from '../lib/config.js';
 import { uninstallPlugin } from '../lib/installer.js';
+import { getPlatformConfig, PLATFORM_NAMES, DEFAULT_PLATFORM } from '../lib/platforms.js';
 import logger from '../utils/logger.js';
 import { resolvePath } from '../utils/fs-utils.js';
 import { t } from '../i18n/index.js';
@@ -16,20 +17,37 @@ export default function uninstallCommand(program) {
     .alias('rm')
     .description(t('uninstall.description'))
     .option('-p, --path <path>', t('uninstall.optionPath'))
+    .option('-t, --target <platform>', t('uninstall.optionTarget'), DEFAULT_PLATFORM)
     .option('-y, --yes', t('uninstall.optionYes'))
     .action(async (pluginName, options) => {
       const spinner = ora();
 
       try {
+        // Validate platform
+        const platform = options.target;
+        if (!PLATFORM_NAMES.includes(platform)) {
+          logger.error(
+            t('install.invalidPlatform', {
+              name: platform,
+              valid: PLATFORM_NAMES.join(', ')
+            })
+          );
+          process.exit(1);
+        }
+
+        const platformConfig = getPlatformConfig(platform);
+
         // Determine path
         const targetPath = options.path
           ? resolvePath(options.path)
           : process.cwd();
-        const claudeDir = join(targetPath, '.claude');
+        const baseDir = join(targetPath, platformConfig.dir);
 
-        // Check if .claude directory exists
-        if (!existsSync(claudeDir)) {
-          logger.error(t('uninstall.noClaudeDir', { path: targetPath }));
+        // Check if target directory exists
+        if (!existsSync(baseDir)) {
+          logger.error(
+            t('uninstall.noTargetDir', { dir: platformConfig.dir, path: targetPath })
+          );
           process.exit(1);
         }
 
@@ -59,14 +77,30 @@ export default function uninstallCommand(program) {
         const components = plugin.components || {};
 
         if (components.agents?.length) {
-          console.log(
-            chalk.gray(`  ${t('common.agents')}: ${components.agents.join(', ')}`)
-          );
+          if (platformConfig.agents) {
+            console.log(
+              chalk.gray(`  ${t('common.agents')}: ${components.agents.join(', ')}`)
+            );
+          } else {
+            console.log(
+              chalk.yellow(
+                `  ${t('common.agents')}: ${t('install.platformNotSupported', { platform: platformConfig.name, component: t('common.agents') })}`
+              )
+            );
+          }
         }
         if (components.commands?.length) {
-          console.log(
-            chalk.gray(`  ${t('common.commands')}: /${components.commands.join(', /')}`)
-          );
+          if (platformConfig.commands) {
+            console.log(
+              chalk.gray(`  ${t('common.commands')}: /${components.commands.join(', /')}`)
+            );
+          } else {
+            console.log(
+              chalk.yellow(
+                `  ${t('common.commands')}: ${t('install.platformNotSupported', { platform: platformConfig.name, component: t('common.commands') })}`
+              )
+            );
+          }
         }
         if (components.skills?.length) {
           console.log(
@@ -95,7 +129,7 @@ export default function uninstallCommand(program) {
         // Uninstall
         spinner.start(t('uninstall.uninstalling', { name: chalk.cyan(plugin.name) }));
 
-        const results = await uninstallPlugin(plugin, claudeDir);
+        const results = await uninstallPlugin(plugin, baseDir, { platform });
 
         spinner.succeed(t('uninstall.uninstalled', { name: chalk.cyan(plugin.name) }));
 
@@ -110,6 +144,19 @@ export default function uninstallCommand(program) {
             })
           )
         );
+
+        // Show skipped info
+        if (results.skippedAgents > 0 || results.skippedCommands > 0) {
+          console.log(
+            chalk.yellow(
+              `  ${t('install.skippedComponents', {
+                agents: results.skippedAgents,
+                commands: results.skippedCommands,
+                platform: platformConfig.name
+              })}`
+            )
+          );
+        }
       } catch (error) {
         spinner.fail();
         logger.error(error.message);

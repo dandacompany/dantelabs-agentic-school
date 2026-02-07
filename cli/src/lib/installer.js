@@ -3,6 +3,7 @@ import { join, dirname } from 'path';
 import { existsSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { fetchFile, downloadDirectory } from './downloader.js';
+import { getPlatformConfig, DEFAULT_PLATFORM } from './platforms.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -143,9 +144,10 @@ function getSourcePath(plugin) {
  *   └── skills/{skill-name}/
  */
 export async function installPlugin(plugin, claudeDir, options = {}) {
-  const { force = false, onProgress } = options;
+  const { force = false, onProgress, platform = DEFAULT_PLATFORM } = options;
   const pluginName = plugin.name;
   const sourcePath = getSourcePath(plugin); // e.g., "plugins/brand-analytics"
+  const platformConfig = getPlatformConfig(platform);
 
   // Determine if we should use local or remote source
   const useLocalSource = hasLocalSource(sourcePath);
@@ -161,21 +163,29 @@ export async function installPlugin(plugin, claudeDir, options = {}) {
     }
   }
 
-  // Create base directories
-  await ensureDir(join(claudeDir, 'agents'));
-  await ensureDir(join(claudeDir, 'commands'));
-  await ensureDir(join(claudeDir, 'skills'));
+  // Create base directories only for supported component types
+  if (platformConfig.agents) {
+    await ensureDir(join(claudeDir, platformConfig.agents));
+  }
+  if (platformConfig.commands) {
+    await ensureDir(join(claudeDir, platformConfig.commands));
+  }
+  await ensureDir(join(claudeDir, platformConfig.skills));
 
   const results = {
     plugin: pluginName,
     agents: 0,
     commands: 0,
-    skills: 0
+    skills: 0,
+    skippedAgents: 0,
+    skippedCommands: 0,
   };
 
-  // Install agents
-  if (components.agents?.length) {
-    const agentsTargetDir = join(claudeDir, 'agents', pluginName);
+  // Install agents (skip if platform does not support agents)
+  if (components.agents?.length && !platformConfig.agents) {
+    results.skippedAgents = components.agents.length;
+  } else if (components.agents?.length) {
+    const agentsTargetDir = join(claudeDir, platformConfig.agents, pluginName);
     await ensureDir(agentsTargetDir);
 
     for (const agentName of components.agents) {
@@ -207,9 +217,11 @@ export async function installPlugin(plugin, claudeDir, options = {}) {
     }
   }
 
-  // Install commands
-  if (components.commands?.length) {
-    const commandsTargetDir = join(claudeDir, 'commands', pluginName);
+  // Install commands (skip if platform does not support commands)
+  if (components.commands?.length && !platformConfig.commands) {
+    results.skippedCommands = components.commands.length;
+  } else if (components.commands?.length) {
+    const commandsTargetDir = join(claudeDir, platformConfig.commands, pluginName);
     await ensureDir(commandsTargetDir);
 
     for (const commandName of components.commands) {
@@ -244,7 +256,7 @@ export async function installPlugin(plugin, claudeDir, options = {}) {
   // Install skills (preserve full directory structure)
   if (components.skills?.length) {
     for (const skillName of components.skills) {
-      const skillTargetDir = join(claudeDir, 'skills', skillName);
+      const skillTargetDir = join(claudeDir, platformConfig.skills, skillName);
 
       if (!force && existsSync(skillTargetDir)) {
         throw new Error(`Directory exists: ${skillTargetDir}. Use --force to overwrite.`);
@@ -282,9 +294,11 @@ export async function installPlugin(plugin, claudeDir, options = {}) {
 /**
  * Uninstall a plugin from .claude directory
  */
-export async function uninstallPlugin(plugin, claudeDir) {
+export async function uninstallPlugin(plugin, claudeDir, options = {}) {
+  const { platform = DEFAULT_PLATFORM } = options;
   const pluginName = plugin.name;
   const sourcePath = getSourcePath(plugin);
+  const platformConfig = getPlatformConfig(platform);
 
   // Discover components dynamically (or use provided components for backward compatibility)
   let components = plugin.components;
@@ -303,31 +317,37 @@ export async function uninstallPlugin(plugin, claudeDir) {
     plugin: pluginName,
     agents: 0,
     commands: 0,
-    skills: 0
+    skills: 0,
+    skippedAgents: 0,
+    skippedCommands: 0,
   };
 
-  // Remove agents
-  if (components.agents?.length) {
-    const agentsDir = join(claudeDir, 'agents', pluginName);
+  // Remove agents (skip if platform does not support agents)
+  if (components.agents?.length && platformConfig.agents) {
+    const agentsDir = join(claudeDir, platformConfig.agents, pluginName);
     if (existsSync(agentsDir)) {
       await rm(agentsDir, { recursive: true });
       results.agents = components.agents.length;
     }
+  } else if (components.agents?.length) {
+    results.skippedAgents = components.agents.length;
   }
 
-  // Remove commands
-  if (components.commands?.length) {
-    const commandsDir = join(claudeDir, 'commands', pluginName);
+  // Remove commands (skip if platform does not support commands)
+  if (components.commands?.length && platformConfig.commands) {
+    const commandsDir = join(claudeDir, platformConfig.commands, pluginName);
     if (existsSync(commandsDir)) {
       await rm(commandsDir, { recursive: true });
       results.commands = components.commands.length;
     }
+  } else if (components.commands?.length) {
+    results.skippedCommands = components.commands.length;
   }
 
   // Remove skills
   if (components.skills?.length) {
     for (const skillName of components.skills) {
-      const skillDir = join(claudeDir, 'skills', skillName);
+      const skillDir = join(claudeDir, platformConfig.skills, skillName);
       if (existsSync(skillDir)) {
         await rm(skillDir, { recursive: true });
         results.skills++;

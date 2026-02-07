@@ -7,6 +7,7 @@ import { mkdir } from 'fs/promises';
 
 import { getMarketplaceConfig, getPluginDependencies } from '../lib/config.js';
 import { installPlugin } from '../lib/installer.js';
+import { getPlatformConfig, PLATFORM_NAMES, DEFAULT_PLATFORM } from '../lib/platforms.js';
 import logger from '../utils/logger.js';
 import { resolvePath } from '../utils/fs-utils.js';
 import { t } from '../i18n/index.js';
@@ -17,6 +18,7 @@ export default function installCommand(program) {
     .alias('i')
     .description(t('install.description'))
     .option('-p, --path <path>', t('install.optionPath'))
+    .option('-t, --target <platform>', t('install.optionTarget'), DEFAULT_PLATFORM)
     .option('-f, --force', t('install.optionForce'))
     .option('--all', t('install.optionAll'))
     .option('--no-common', t('install.optionNoCommon'))
@@ -25,13 +27,36 @@ export default function installCommand(program) {
       const spinner = ora();
 
       try {
+        // Validate platform
+        const platform = options.target;
+        if (!PLATFORM_NAMES.includes(platform)) {
+          logger.error(
+            t('install.invalidPlatform', {
+              name: platform,
+              valid: PLATFORM_NAMES.join(', ')
+            })
+          );
+          process.exit(1);
+        }
+
+        const platformConfig = getPlatformConfig(platform);
+
         // Determine installation path
         const targetPath = options.path
           ? resolvePath(options.path)
           : process.cwd();
-        const claudeDir = join(targetPath, '.claude');
+        const baseDir = join(targetPath, platformConfig.dir);
 
-        logger.info(`${t('install.installTarget')}: ${chalk.cyan(claudeDir)}`);
+        // Show platform info for non-default platforms
+        if (platform !== DEFAULT_PLATFORM) {
+          logger.info(
+            t('install.platformInfo', {
+              name: platformConfig.name,
+              description: platformConfig.description
+            })
+          );
+        }
+        logger.info(`${t('install.installTarget')}: ${chalk.cyan(baseDir)}`);
 
         // Load marketplace config
         spinner.start(t('install.loadingRegistry'));
@@ -100,18 +125,34 @@ export default function installCommand(program) {
             const components = plugin.components || {};
 
             if (components.agents?.length) {
-              console.log(
-                chalk.gray(
-                  `    ${t('common.agents')}: ${components.agents.join(', ')}`
-                )
-              );
+              if (platformConfig.agents) {
+                console.log(
+                  chalk.gray(
+                    `    ${t('common.agents')}: ${components.agents.join(', ')}`
+                  )
+                );
+              } else {
+                console.log(
+                  chalk.yellow(
+                    `    ${t('common.agents')}: ${t('install.platformNotSupported', { platform: platformConfig.name, component: t('common.agents') })}`
+                  )
+                );
+              }
             }
             if (components.commands?.length) {
-              console.log(
-                chalk.gray(
-                  `    ${t('common.commands')}: /${components.commands.join(', /')}`
-                )
-              );
+              if (platformConfig.commands) {
+                console.log(
+                  chalk.gray(
+                    `    ${t('common.commands')}: /${components.commands.join(', /')}`
+                  )
+                );
+              } else {
+                console.log(
+                  chalk.yellow(
+                    `    ${t('common.commands')}: ${t('install.platformNotSupported', { platform: platformConfig.name, component: t('common.commands') })}`
+                  )
+                );
+              }
             }
             if (components.skills?.length) {
               console.log(
@@ -127,22 +168,25 @@ export default function installCommand(program) {
           return;
         }
 
-        // Create .claude directory
-        if (!existsSync(claudeDir)) {
-          await mkdir(claudeDir, { recursive: true });
+        // Create base directory
+        if (!existsSync(baseDir)) {
+          await mkdir(baseDir, { recursive: true });
         }
 
         // Install each plugin
         let totalAgents = 0;
         let totalCommands = 0;
         let totalSkills = 0;
+        let totalSkippedAgents = 0;
+        let totalSkippedCommands = 0;
 
         for (const plugin of pluginsToInstall) {
           spinner.start(t('install.installing', { name: chalk.cyan(plugin.name) }));
 
           try {
-            const results = await installPlugin(plugin, claudeDir, {
+            const results = await installPlugin(plugin, baseDir, {
               force: options.force,
+              platform,
               onProgress: (type, name) => {
                 spinner.text = t('install.installingComponent', {
                   plugin: chalk.cyan(plugin.name),
@@ -155,6 +199,8 @@ export default function installCommand(program) {
             totalAgents += results.agents;
             totalCommands += results.commands;
             totalSkills += results.skills;
+            totalSkippedAgents += results.skippedAgents;
+            totalSkippedCommands += results.skippedCommands;
 
             spinner.succeed(t('install.installed', { name: chalk.cyan(plugin.name) }));
           } catch (err) {
@@ -184,21 +230,46 @@ export default function installCommand(program) {
             })}`
           )
         );
+
+        // Show skipped components warning
+        if (totalSkippedAgents > 0 || totalSkippedCommands > 0) {
+          console.log(
+            chalk.yellow(
+              `  ${t('install.skippedComponents', {
+                agents: totalSkippedAgents,
+                commands: totalSkippedCommands,
+                platform: platformConfig.name
+              })}`
+            )
+          );
+        }
+
         console.log();
-        console.log(`${t('common.location')}: ${chalk.cyan(claudeDir)}`);
+        console.log(`${t('common.location')}: ${chalk.cyan(baseDir)}`);
 
         // Show next steps
         console.log();
         console.log(chalk.bold(`${t('install.nextSteps')}:`));
+
+        // Platform-specific next step hint
+        const cliCommands = {
+          claude: 'claude --help',
+          gemini: 'gemini',
+          antigravity: 'antigravity',
+          codex: 'codex --help',
+          opencode: 'opencode --help',
+          agents: 'claude --help',
+        };
+        const hintCmd = cliCommands[platform] || 'claude --help';
         console.log(
-          `  1. ${t('install.nextStep1', { command: chalk.cyan('claude --help') })}`
+          `  1. ${t('install.nextStep1', { command: chalk.cyan(hintCmd) })}`
         );
 
         // Show example command based on installed plugins
         const hasAnalyzeBrand = pluginsToInstall.some(
           (p) => p.components?.commands?.includes('analyze-brand')
         );
-        if (hasAnalyzeBrand) {
+        if (hasAnalyzeBrand && platformConfig.commands) {
           console.log(
             `  2. ${t('install.nextStep2', {
               command: chalk.cyan('/analyze-brand --brand-doc ./your-brand.md')
