@@ -6,7 +6,7 @@
 
 이 프로젝트는 **GTM Agents 스타일의 전략 에이전트**와 **실제 생성/분석 도구**를 통합하여, **엔드투엔드 비즈니스 자동화**를 제공합니다.
 
-현재 **마케팅 자동화**(8개)와 **데이터 사이언스**(9개) 플러그인이 구현되어 있으며, 향후 **일반 비즈니스** 등으로 확장될 예정입니다.
+현재 **마케팅 자동화**(8개), **데이터 사이언스**(9개), **GCP 클라우드**(1개) 플러그인이 구현되어 있으며, 향후 **일반 비즈니스** 등으로 확장될 예정입니다.
 
 ## 지원 영역
 
@@ -14,6 +14,7 @@
 | --- | --- | --- | --- |
 | 🎯 Marketing | ✅ 구현완료 | 브랜드 분석 → 크리에이티브 제작 | 8개 |
 | 📊 Data Science | ✅ 구현완료 | 데이터 분석 → 모델 학습 → 배포 | 9개 |
+| ☁️ GCP | ✅ 구현완료 | GCP VM 배포 가이드 및 자동화 | 1개 |
 | 💼 Business Ops | 🔜 예정 | 워크플로우 → 자동화 → 리포팅 | - |
 
 ## 특징
@@ -54,6 +55,7 @@ npx dantelabs-agentic-school uninstall brand-analytics
 | 옵션 | 설명 |
 | --- | --- |
 | `--path, -p` | 설치 경로 (기본: 현재 디렉토리) |
+| `--target, -t` | 타겟 플랫폼 (claude, gemini, antigravity, copilot, aider) |
 | `--force, -f` | 기존 파일 덮어쓰기 |
 | `--no-common` | common 유틸리티 제외 |
 | `--dry-run` | 미리보기 (실제 설치 안함) |
@@ -309,10 +311,10 @@ python ~/.claude/skills/kie-video-generator/scripts/generate_video.py --credits
 
 | 항목 | 개수 |
 | --- | --- |
-| 플러그인 | 18개 (common 1 + marketing 8 + data-science 9) |
+| 플러그인 | 19개 (common 1 + marketing 8 + data-science 9 + gcp 1) |
 | 에이전트 | 15개 |
-| 커맨드 | 19개 |
-| 스킬 | 28개 (common 6 + marketing 13 + data-science 9) |
+| 커맨드 | 20개 |
+| 스킬 | 29개 (common 6 + marketing 13 + data-science 9 + gcp 1) |
 
 ## 플러그인 목록
 
@@ -650,6 +652,49 @@ projects/{project-name}/
 - [기본 파이프라인 가이드](./DATA_SCIENCE_PIPELINE.md)
 - [고급 파이프라인 가이드](./ADVANCED_DATA_SCIENCE_PIPELINE.md)
 - [프로젝트 구조 가이드](./PROJECTS.md)
+
+---
+
+## ☁️ GCP Plugins
+
+Google Cloud Platform 배포 가이드 및 자동화 도구를 제공합니다.
+
+### gcp-openclaw
+
+GCP VM 인스턴스에 OpenClaw를 배포하는 포괄적인 가이드입니다.
+
+| 컴포넌트 | 이름 | 설명 |
+| --- | --- | --- |
+| Command | /deploy-openclaw | GCP VM 생성 및 OpenClaw 배포 가이드 실행 |
+| Skill | gcp-openclaw | GCP 배포 전체 워크플로 (VM, SSH, OpenClaw, GOG CLI) |
+
+#### 사용 예시
+
+```bash
+# 기본 설정으로 배포 가이드 실행
+/deploy-openclaw
+
+# 서울 리전에 커스텀 설정으로 배포
+/deploy-openclaw --zone asia-northeast3-a --machine-type e2-medium --instance-name openclaw-kr
+```
+
+#### 배포 파이프라인
+
+```text
+1. GCP 인증 및 프로젝트 설정
+    ↓
+2. VM 인스턴스 생성 (Ubuntu 22.04 LTS)
+    ↓
+3. SSH 구성 및 접속
+    ↓
+4. 의존성 설치 (Node.js v22+, Go 1.23+)
+    ↓
+5. OpenClaw 설치 및 초기화
+    ↓
+6. GOG CLI 설치 및 인증
+    ↓
+7. SSH 터널링으로 대시보드 접속
+```
 
 ---
 
