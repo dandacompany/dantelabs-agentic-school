@@ -55,13 +55,47 @@ npx dantelabs-agentic-school uninstall brand-analytics
 | 옵션 | 설명 |
 | --- | --- |
 | `--path, -p` | 설치 경로 (기본: 현재 디렉토리) |
-| `--target, -t` | 타겟 플랫폼 (claude, gemini, antigravity, copilot, aider) |
+| `--target, -t` | 타겟 플랫폼 (claude, gemini, antigravity, codex, opencode, agents) |
 | `--force, -f` | 기존 파일 덮어쓰기 |
 | `--no-common` | common 유틸리티 제외 |
 | `--dry-run` | 미리보기 (실제 설치 안함) |
 | `--json` | JSON 형식 출력 (list, info) |
 | `-v, --verbose` | 상세 정보 표시 |
 | `-l, --lang` | 언어 설정 (en, ko) - 기본: en |
+
+### 멀티플랫폼 설치
+
+`--target` 옵션으로 다양한 AI 코딩 도구에 플러그인을 설치할 수 있습니다.
+
+```bash
+# Claude Code (기본값, --target 생략 가능)
+npx dantelabs-agentic-school install gcp-openclaw
+
+# Gemini CLI
+npx dantelabs-agentic-school install gcp-openclaw --target gemini
+
+# Google Antigravity IDE
+npx dantelabs-agentic-school install gcp-openclaw --target antigravity
+
+# OpenAI Codex CLI
+npx dantelabs-agentic-school install gcp-openclaw --target codex
+
+# OpenCode
+npx dantelabs-agentic-school install gcp-openclaw --target opencode
+```
+
+#### 플랫폼별 호환성
+
+| 플랫폼 | 디렉토리 | Skills | Agents | Commands |
+| --- | --- | --- | --- | --- |
+| `claude` (기본) | `.claude/` | ✅ | ✅ | ✅ |
+| `gemini` | `.gemini/` | ✅ | ✅ | ❌ skip |
+| `antigravity` | `.agent/` | ✅ | ❌ skip | ❌ skip |
+| `codex` | `.agents/` | ✅ | ❌ skip | ❌ skip |
+| `opencode` | `.opencode/` | ✅ | ✅ | ✅ |
+| `agents` | `.agents/` | ✅ | ❌ skip | ❌ skip |
+
+> **Note**: 모든 플러그인의 Skills는 모든 플랫폼에서 설치됩니다. Agents/Commands는 해당 플랫폼이 지원하지 않으면 자동으로 skip됩니다.
 
 ### 샘플 다운로드
 
