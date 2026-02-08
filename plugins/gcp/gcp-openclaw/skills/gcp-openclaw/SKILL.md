@@ -9,23 +9,117 @@ description: VM 설정, SSH 구성, OpenClaw 설치 및 GOG CLI 설정을 포함
 
 ## 1. 전제 조건 (로컬 머신)
 
-로컬 컴퓨터에 Google Cloud CLI (`gcloud`)가 설치되어 있고 인증이 완료되었는지 확인하십시오.
+### 1.1 Google Cloud CLI 설치 확인
 
-### 1.1 Google Cloud 인증
+먼저 `gcloud`가 설치되어 있는지 확인합니다.
+
 ```bash
-gcloud auth login --no-launch-browser
+gcloud version
 ```
-출력된 URL을 브라우저에서 열어 인증하고, 확인 코드를 터미널에 붙여넣습니다.
 
-### 1.2 프로젝트 및 결제 설정
+명령어가 정상 실행되면 **1.2 단계로 건너뜁니다**. `command not found` 에러가 발생하면 아래 설치 과정을 진행합니다.
+
+### 1.2 Google Cloud CLI 설치
+
+#### macOS
+
 ```bash
-# 프로젝트 ID 설정
+# Homebrew로 설치 (권장)
+brew install --cask google-cloud-sdk
+
+# 또는 공식 스크립트로 설치
+curl https://sdk.cloud.google.com | bash
+exec -l $SHELL
+```
+
+#### Linux (Debian/Ubuntu)
+
+```bash
+# 패키지 소스 추가
+sudo apt-get install -y apt-transport-https ca-certificates gnupg curl
+curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo gpg --dearmor -o /usr/share/keyrings/cloud.google.gpg
+echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | sudo tee /etc/apt/sources.list.d/google-cloud-sdk.list
+
+# 설치
+sudo apt-get update && sudo apt-get install -y google-cloud-cli
+```
+
+#### Linux (RHEL/CentOS/Fedora)
+
+```bash
+# 패키지 소스 추가
+sudo tee /etc/yum.repos.d/google-cloud-sdk.repo << 'EOF'
+[google-cloud-cli]
+name=Google Cloud CLI
+baseurl=https://packages.cloud.google.com/yum/repos/cloud-sdk-el9-x86_64
+enabled=1
+gpgcheck=1
+repo_gpgcheck=0
+gpgkey=https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+EOF
+
+# 설치
+sudo dnf install -y google-cloud-cli
+```
+
+#### Windows
+
+```powershell
+# winget으로 설치
+winget install Google.CloudSDK
+
+# 또는 공식 인스톨러 다운로드
+# https://cloud.google.com/sdk/docs/install#windows
+```
+
+설치 후 `gcloud version`으로 정상 설치를 확인합니다.
+
+### 1.3 Google Cloud 초기화 및 인증
+
+```bash
+# 초기화 (최초 1회 - 프로젝트 선택, 기본 리전/존 설정을 대화형으로 진행)
+gcloud init
+```
+
+`gcloud init`이 안내하는 단계:
+1. Google 계정 로그인 (브라우저 열림)
+2. 프로젝트 선택 또는 새 프로젝트 생성
+3. 기본 Compute Engine 리전/존 설정
+
+> **Headless 환경** (SSH 접속 등 브라우저가 없는 경우):
+> ```bash
+> gcloud init --no-launch-browser
+> ```
+> 출력된 URL을 로컬 브라우저에서 열어 인증하고, 확인 코드를 터미널에 붙여넣습니다.
+
+### 1.4 전역 환경 설정
+
+```bash
+# 기본 프로젝트 설정
 gcloud config set project [YOUR_PROJECT_ID]
 
-# 필요한 서비스 활성화
+# 기본 리전/존 설정 (gcloud init에서 설정하지 않은 경우)
+gcloud config set compute/region us-central1
+gcloud config set compute/zone us-central1-a
+
+# 필요한 API 활성화
 gcloud services enable compute.googleapis.com
 gcloud services enable cloudresourcemanager.googleapis.com
+
+# 설정 확인
+gcloud config list
 ```
+
+> **Tip**: `gcloud config configurations`를 활용하면 프로젝트/계정별로 여러 설정 프로필을 관리할 수 있습니다.
+> ```bash
+> # 새 설정 프로필 생성
+> gcloud config configurations create openclaw-dev
+> gcloud config set project my-openclaw-project
+> gcloud config set compute/zone asia-northeast3-a
+>
+> # 프로필 전환
+> gcloud config configurations activate openclaw-dev
+> ```
 
 ## 2. VM 인스턴스 생성
 
@@ -211,6 +305,8 @@ gcloud compute ssh openclaw-instance --zone=us-central1-a -- -L 18790:localhost:
 
 ## 9. 문제 해결 팁
 
+- **gcloud 설치 확인:** `gcloud version` 실행 시 `command not found`가 나오면 1.2 단계의 OS별 설치 가이드를 따르십시오.
+- **gcloud 인증 만료:** `gcloud auth login` 또는 `gcloud auth application-default login`으로 재인증하십시오.
 - **메모리 문제:** `npm install` 실패 시 인스턴스 사양이 최소 `e2-small` (2GB RAM) 이상인지 확인하십시오. 스왑(swap) 파일을 추가하는 것도 방법입니다.
 - **Go 버전:** `gogcli` 빌드 실패 시 `go version`을 확인하십시오. 반드시 1.22 버전 이상이어야 합니다.
 - **포트 충돌:** 로컬에서 18789 포트가 이미 사용 중이라면 다른 포트를 사용하십시오 (예: `-L 18790:localhost:18789`).
