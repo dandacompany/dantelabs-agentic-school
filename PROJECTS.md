@@ -19,8 +19,10 @@ dantelabs-agentic-school/
 │   │   ├── shap-analysis/
 │   │   ├── model-monitoring/
 │   │   └── model-deployment/
-│   └── gcp/                    # GCP 클라우드 플러그인 (1개)
-│       └── gcp-openclaw/
+│   ├── gcp/                    # GCP 클라우드 플러그인 (1개)
+│   │   └── gcp-openclaw/
+│   └── media/                  # 미디어 제작 플러그인 (1개)
+│       └── media-fx/
 │
 ├── projects/                   # 분석 프로젝트들 (주제별)
 │   ├── creditcard-fraud-detection/

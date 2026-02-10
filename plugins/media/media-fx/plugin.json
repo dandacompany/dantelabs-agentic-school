@@ -1,0 +1,9 @@
+{
+  "name": "media-fx",
+  "description": "ElevenLabs AI 음성 생성, 사운드 이펙트, 음성 클론 등 오디오 제작 도구",
+  "version": "1.0.0",
+  "author": {
+    "name": "Dante Labs",
+    "email": "datapod.k@gmail.com"
+  }
+}

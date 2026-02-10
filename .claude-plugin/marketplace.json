@@ -144,13 +144,21 @@
       "version": "1.0.0",
       "source": "./plugins/gcp/gcp-openclaw",
       "category": "gcp"
+    },
+    {
+      "name": "media-fx",
+      "description": "ElevenLabs AI 음성 생성, 사운드 이펙트, 음성 클론 등 오디오 제작 도구",
+      "version": "1.0.0",
+      "source": "./plugins/media/media-fx",
+      "category": "media"
     }
   ],
   "categories": [
     "common",
     "marketing",
     "data-science",
-    "gcp"
+    "gcp",
+    "media"
   ],
   "tags": [
     "agentic-business",
@@ -176,6 +184,14 @@
     "workflow-automation",
     "gcp",
     "openclaw",
-    "deployment"
+    "deployment",
+    "media",
+    "audio",
+    "tts",
+    "text-to-speech",
+    "voice-cloning",
+    "sound-effects",
+    "elevenlabs",
+    "ai-audio"
   ]
 }
