@@ -1,0 +1,6 @@
+openai-whisper
+noisereduce
+soundfile
+scipy
+numpy
+requests

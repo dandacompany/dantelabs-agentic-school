@@ -192,6 +192,9 @@
     "voice-cloning",
     "sound-effects",
     "elevenlabs",
-    "ai-audio"
+    "ai-audio",
+    "video-editor",
+    "whisper",
+    "stt"
   ]
 }
