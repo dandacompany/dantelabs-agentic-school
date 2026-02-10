@@ -295,17 +295,141 @@ curl -X POST "https://api.elevenlabs.io/v1/voices/add" \
 
 #### 5.2 Professional Voice Cloning (PVC)
 
-더 높은 품질의 음성 클론을 위해 ElevenLabs 팀이 직접 처리합니다.
+더 높은 품질의 음성 클론을 생성합니다. Creator 플랜 이상 필요.
+
+**PVC vs IVC 비교:**
+- **IVC**: 빠르고 간단한 음성 클론 (1분~5분 소요)
+- **PVC**: 고품질 정밀 음성 클론 (30분+ 오디오 필요, 더 높은 정확도)
+
+**API 워크플로우:**
+
+**Step 1: PVC 생성**
+
+```bash
+curl -X POST "https://api.elevenlabs.io/v1/voices/add/pvc" \
+  -H "xi-api-key: $ELEVENLABS_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "My Professional Voice",
+    "description": "고품질 음성 클론",
+    "language": "ko"
+  }'
+```
+
+**Response:**
+```json
+{
+  "voice_id": "pvc_voice_id_here",
+  "status": "created"
+}
+```
+
+**Step 2: 오디오/비디오 샘플 업로드**
+
+```bash
+# 여러 샘플 업로드 (30분 이상 권장)
+curl -X POST "https://api.elevenlabs.io/v1/voices/pvc/{voice_id}/samples" \
+  -H "xi-api-key: $ELEVENLABS_API_KEY" \
+  -F "file=@recording1.mp3" \
+  -F "file=@recording2.mp3" \
+  -F "file=@recording3.mp4"
+```
+
+**Step 3: 화자 분리 (다화자 샘플인 경우)**
+
+```bash
+# 화자 분리 요청
+curl -X POST "https://api.elevenlabs.io/v1/voices/pvc/{voice_id}/samples/{sample_id}/speakers/separate" \
+  -H "xi-api-key: $ELEVENLABS_API_KEY"
+
+# 분리 상태 확인
+curl -X GET "https://api.elevenlabs.io/v1/voices/pvc/{voice_id}/samples/{sample_id}/speakers" \
+  -H "xi-api-key: $ELEVENLABS_API_KEY"
+
+# 분리된 화자 선택
+curl -X PATCH "https://api.elevenlabs.io/v1/voices/pvc/{voice_id}/samples/{sample_id}" \
+  -H "xi-api-key: $ELEVENLABS_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "speaker_id": "speaker_1"
+  }'
+```
+
+**Step 4: 신원 확인 (Identity Verification)**
+
+**옵션 A: CAPTCHA 방식**
+
+```bash
+# CAPTCHA 이미지 요청
+curl -X GET "https://api.elevenlabs.io/v1/voices/pvc/{voice_id}/verification/captcha" \
+  -H "xi-api-key: $ELEVENLABS_API_KEY" \
+  --output captcha.png
+
+# CAPTCHA 텍스트를 읽고 녹음한 후 검증
+curl -X POST "https://api.elevenlabs.io/v1/voices/pvc/{voice_id}/verification/captcha/verify" \
+  -H "xi-api-key: $ELEVENLABS_API_KEY" \
+  -F "recording=@captcha_recording.mp3"
+```
+
+**옵션 B: 수동 검증 요청**
+
+```bash
+curl -X POST "https://api.elevenlabs.io/v1/voices/pvc/{voice_id}/verification/request" \
+  -H "xi-api-key: $ELEVENLABS_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "verification_method": "manual"
+  }'
+```
+
+**Step 5: 모델 학습 시작**
+
+```bash
+curl -X POST "https://api.elevenlabs.io/v1/voices/pvc/{voice_id}/train" \
+  -H "xi-api-key: $ELEVENLABS_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model_id": "eleven_multilingual_v2"
+  }'
+```
+
+**Step 6: 학습 진행 상태 확인**
+
+```bash
+curl -X GET "https://api.elevenlabs.io/v1/voices/{voice_id}" \
+  -H "xi-api-key: $ELEVENLABS_API_KEY"
+```
+
+**Response:**
+```json
+{
+  "voice_id": "pvc_voice_id_here",
+  "name": "My Professional Voice",
+  "status": "training",
+  "training_progress": 45,
+  "estimated_completion": "2026-02-11T10:30:00Z"
+}
+```
+
+**완료 후 상태:**
+```json
+{
+  "voice_id": "pvc_voice_id_here",
+  "status": "ready",
+  "training_progress": 100
+}
+```
 
 **요구 사항:**
-- 최소 30분 분량의 고품질 오디오
-- 전문 마이크 녹음 권장
-- 다양한 감정, 톤, 속도 포함
+- **플랜**: Creator 이상
+- **오디오 길이**: 최소 30분 (더 많을수록 품질 향상)
+- **오디오 품질**: 전문 마이크 권장, 배경 소음 최소화
+- **다양성**: 다양한 감정, 톤, 속도 포함
+- **샘플 수**: 여러 개의 샘플로 분할 (10~20개 권장)
 
-**프로세스:**
-1. 샘플 업로드 및 요청 제출
-2. ElevenLabs 팀 검토 (1~2주 소요)
-3. 음성 클론 완료 및 활성화
+**학습 시간:**
+- 일반적으로 2~6시간 소요
+- 샘플 양과 품질에 따라 달라짐
 
 ### 6. History Management
 
