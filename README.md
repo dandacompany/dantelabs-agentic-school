@@ -349,7 +349,7 @@ python ~/.claude/skills/kie-video-generator/scripts/generate_video.py --credits
 | 플러그인 | 20개 (common 1 + marketing 8 + data-science 9 + gcp 1 + media 1) |
 | 에이전트 | 15개 |
 | 커맨드 | 23개 |
-| 스킬 | 31개 (common 6 + marketing 13 + data-science 9 + gcp 1 + media 2) |
+| 스킬 | 32개 (common 6 + marketing 13 + data-science 9 + gcp 1 + media 3) |
 
 ## 플러그인 목록
 
@@ -748,6 +748,7 @@ ElevenLabs AI API를 통한 고품질 음성 생성, 사운드 이펙트, AI 비
 | Command | /list-voices | 사용 가능한 음성 목록 조회 및 필터링 |
 | Skill | elevenlabs-api | ElevenLabs API 전체 가이드 (TTS, Sound Effects, Voice Cloning) |
 | Skill | video-editor | Whisper STT + ElevenLabs TTS 기반 자동 비디오 편집 |
+| Skill | ffmpeg-cli | FFmpeg 멀티미디어 처리 가이드 (13개 작업, 필터, 레시피) |
 
 #### 주요 기능
 
