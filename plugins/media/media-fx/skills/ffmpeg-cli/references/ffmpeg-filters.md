@@ -125,27 +125,44 @@ Resize video to specific dimensions or maintain aspect ratio.
 
 **Parameters:**
 - `width:height` - Target dimensions
-  - Numbers: exact pixels
-  - `-1` - maintain aspect ratio
-  - `iw*0.5` - 50% of input width
-  - Expressions: `trunc(iw/2)*2` - ensure even dimensions
+
+**Special values (from official docs):**
+
+| Value | Meaning |
+|-------|---------|
+| Number | Exact pixels |
+| `-1` | Maintain aspect ratio (may produce odd number) |
+| `-2` | Maintain aspect ratio, round to nearest **even** value |
+| `iw`, `ih` | Input width/height |
+| `ow`, `oh` | Output width/height (for chained expressions) |
+| `iw*0.5` | 50% of input width |
+| `trunc(iw/2)*2` | Force even dimensions (manual) |
+
+> **Tip**: Use `-2` instead of `-1` when encoding with H.264 to automatically ensure even dimensions.
 
 **Special Options:**
 - `force_original_aspect_ratio` - `decrease` or `increase`
+- `flags` - Scaling algorithm: `lanczos` (sharpest), `bicubic` (default), `bilinear` (fastest)
 
 **Examples:**
 ```bash
 # Scale to 720p, maintaining aspect ratio
 scale=1280:720
 
-# Scale width to 1920, auto-calculate height
-scale=1920:-1
+# Scale width to 1920, auto-calculate height (ensure even)
+scale=1920:-2
 
 # Scale to 50% size
 scale=iw*0.5:ih*0.5
 
-# Ensure even dimensions (required for some codecs)
+# Ensure even dimensions (for H.264)
 scale=trunc(iw/2)*2:trunc(ih/2)*2
+
+# High-quality downscale with Lanczos
+scale=1280:720:flags=lanczos
+
+# Fit within 1920x1080 maintaining aspect ratio + pad
+scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2
 ```
 
 ---
@@ -573,9 +590,39 @@ ffmpeg -i video_no_audio.mp4 -f lavfi -i anullsrc=channel_layout=stereo:sample_r
 
 ## Filter Graph Syntax
 
+### Hierarchy (Official)
+
+A **filtergraph** is the complete filter description, consisting of:
+
+```
+filtergraph = filterchain { ";" filterchain }
+filterchain = filter { "," filter }
+filter      = [input_labels] filter_name [@id] [= arguments] [output_labels]
+```
+
+- **Semicolons (`;`)** separate independent filterchains
+- **Commas (`,`)** chain filters sequentially within a filterchain
+- **Labels (`[name]`)** connect outputs to inputs across filterchains
+
+### Filter Argument Formats
+
+```bash
+# Key-value pairs (most common)
+filter_name=key1=value1:key2=value2
+
+# Positional values
+filter_name=value1:value2
+
+# Mixed format
+filter_name=value1:key2=value2
+
+# Multi-item values use pipe separator
+filter_name=key=value1|value2|value3
+```
+
 ### Simple Filters (`-vf`, `-af`)
 
-For single input/output:
+For single input/output (shorthand for simple filterchains):
 ```bash
 -vf "filter1=param1=value1,filter2=param2=value2"
 -af "filter1,filter2"
@@ -583,7 +630,7 @@ For single input/output:
 
 ### Complex Filter Graphs (`-filter_complex`)
 
-For multiple inputs/outputs or complex routing:
+For multiple inputs/outputs or cross-stream routing:
 ```bash
 -filter_complex "
   [0:v]scale=1920:1080[scaled];
@@ -596,10 +643,76 @@ For multiple inputs/outputs or complex routing:
 - `[0:a]` - first input, audio stream
 - `[1:v]` - second input, video stream
 - `[label]` - intermediate or output label
+- Unlabeled outputs auto-connect to next filter's unlabeled input
 
 **Chain Operators:**
-- `,` - chain filters sequentially
-- `;` - separate filter chains
+- `,` - chain filters sequentially (output → input)
+- `;` - separate independent filterchains (use labels to connect)
+
+### Escaping Rules (Multi-Level)
+
+FFmpeg filter strings require up to 3 levels of escaping:
+
+**Level 1 — Filter option values:**
+Escape special characters within option values using backslash:
+```bash
+# Colon in text content
+drawtext=text='Time\: 12\:30'
+
+# Single quote in text
+drawtext=text='don'\''t'
+```
+
+**Level 2 — Filtergraph structure characters:**
+These characters have special meaning in filtergraph syntax: `[ ] , ; '`
+```bash
+# Use backslash to escape if needed literally
+drawtext=text='Hello\; World'
+```
+
+**Level 3 — Shell metacharacters:**
+```bash
+# Wrap -filter_complex value in double quotes
+# Use single quotes for inner string values
+ffmpeg -i input.mp4 -filter_complex "[0:v]drawtext=text='Hello World':fontsize=48[out]" ...
+
+# Avoid shell interpretation of special chars
+ffmpeg -i input.mp4 -vf "drawtext=text='Price\: \$100'" ...
+```
+
+**Best practice**: Use double quotes around the entire filter string, single quotes for text values inside.
+
+### Expression Evaluation
+
+Many filter parameters accept expressions with these variables and functions:
+
+**Common Variables:**
+
+| Variable | Scope | Description |
+|----------|-------|-------------|
+| `t` | drawtext, overlay, fade | Timestamp in seconds |
+| `n` | drawtext | Frame number |
+| `w`, `h` | drawtext | Video dimensions |
+| `text_w`, `text_h` | drawtext | Rendered text dimensions |
+| `W`, `H` | overlay | Main input dimensions |
+| `w`, `h` | overlay | Overlay input dimensions |
+| `main_w`, `main_h` | overlay | Main input (alias) |
+| `overlay_w`, `overlay_h` | overlay | Overlay (alias) |
+| `iw`, `ih` | scale | Input dimensions |
+| `ow`, `oh` | pad | Output dimensions |
+
+**Useful Functions:**
+
+| Function | Example |
+|----------|---------|
+| `between(x, min, max)` | `enable='between(t,5,10)'` |
+| `if(cond, then, else)` | `fontsize='if(lt(t,5),24,48)'` |
+| `mod(x, y)` | `x='mod(t*100,w)'` (scrolling) |
+| `sin(x)`, `cos(x)` | `fontsize='20+10*sin(t*2)'` (pulsing) |
+| `st(var, expr)` | `x='st(0,w/2);ld(0)-text_w/2'` |
+| `ld(var)` | Load stored variable (0-9) |
+
+**Constants:** `PI` (3.14159...), `E` (2.71828...), `PHI` (1.61803...)
 
 ---
 
@@ -629,26 +742,44 @@ For multiple inputs/outputs or complex routing:
 
 ## Common Pitfalls
 
-1. **Escaping Special Characters**
-   - Single quotes in text: `text='don''t'` (double the quotes)
-   - Colons in filter parameters: escape with backslash `\\:`
-   - Shell escaping: use double quotes around filter_complex
+1. **Escaping Special Characters (3 levels)**
+   - Level 1 — Colons in text: `text='Time\: 12\:30'`
+   - Level 2 — Single quotes in text: `text='don'\''t'`
+   - Level 3 — Shell escaping: wrap `-filter_complex` in double quotes
+   - **Rule of thumb**: Double quotes outside, single quotes inside, backslash for colons
 
 2. **Even Dimensions Required**
-   - Many codecs (especially H.264) require even width/height
-   - Use `scale=trunc(iw/2)*2:trunc(ih/2)*2` to ensure even dimensions
+   - H.264 requires width AND height divisible by 2
+   - Use `scale=-2:720` (auto-even) or `scale=trunc(iw/2)*2:trunc(ih/2)*2` (manual)
+   - **Gotcha**: `scale=1920:-1` may produce odd height → use `-2` instead
 
 3. **Audio Sync Issues**
-   - Always use `asetpts=PTS-STARTPTS` after audio processing
-   - Use `setpts=PTS-STARTPTS` for video when needed
+   - Always use `asetpts=PTS-STARTPTS` after trimming or splitting audio
+   - Use `setpts=PTS-STARTPTS` for video when concatenating
+   - Normalize `sample_rates` and `channel_layouts` before mixing different sources
 
 4. **Filter Order Matters**
-   - Scale before overlay for better performance
-   - Apply format conversions early in the chain
+   - Scale/crop BEFORE overlay → reduces processing load
+   - Format conversion (pix_fmt) EARLY in the chain
+   - `setpts`/`asetpts` AFTER trim/split operations
 
 5. **Time Base Issues**
-   - Use `settb=AVTB` to set automatic video time base
-   - Essential for multi-video transitions
+   - Use `settb=AVTB` before xfade transitions
+   - Essential when combining videos with different timebase settings
+   - Without it: transitions may have wrong timing
+
+6. **Stream Copy vs Filters**
+   - `-c copy` with `-vf` or `-af` → ERROR: filters need decoded frames
+   - **Fix**: Re-encode the stream that needs filtering: `-c:v libx264 -c:a copy`
+
+7. **-map Disables Auto-Selection**
+   - Using `-map "[v]"` without `-map 0:a` → silent output
+   - Always map ALL desired streams when using `-map`
+
+8. **Bitrate Units**
+   - FFmpeg uses bits/s, not bytes/s
+   - `-b:v 2M` = 2 Megabits/s = 250 KB/s
+   - Use `K` (1000), `M` (1000000), `G` (1000000000)
 
 ---
 

@@ -238,32 +238,57 @@ ffmpeg -i main.mp4 -i small.mp4 \
 
 ### Trim/Cut Video
 
-**Extract segment from 5 to 15 seconds:**
+**Fast cut (input seeking — keyframe-accurate):**
 ```bash
-ffmpeg -i input.mp4 -ss 5 -to 15 -c copy output.mp4
+ffmpeg -ss 5 -i input.mp4 -t 10 -c copy output.mp4
 ```
 
-**Extract 10 seconds starting at 5 seconds:**
-```bash
-ffmpeg -i input.mp4 -ss 5 -t 10 -c copy output.mp4
-```
-
-**Accurate cutting (slower but precise):**
+**Accurate cut (output seeking — frame-exact, requires re-encode):**
 ```bash
 ffmpeg -i input.mp4 -ss 5 -t 10 -c:v libx264 -c:a aac output.mp4
 ```
+
+**Combined seeking (fast jump + fine-tune):**
+```bash
+ffmpeg -ss 4 -i input.mp4 -ss 1 -t 10 -c:v libx264 -c:a aac output.mp4
+```
+
+**Time duration formats:**
+```bash
+-ss 01:23:45.678   # HH:MM:SS.mmm
+-ss 90              # 90 seconds
+-ss 5500ms          # milliseconds
+-t 10               # 10 second duration
+-to 15              # end at 15 seconds
+```
+
+> **Note**: `-ss` before `-i` = input seeking (fast), after `-i` = output seeking (accurate).
 
 ### Merge/Concatenate Videos
 
 **Method 1: Concat demuxer (same codec/format):**
 ```bash
-# Create file list
+# Create file list (simple format)
 echo "file 'video1.mp4'" > list.txt
 echo "file 'video2.mp4'" >> list.txt
 echo "file 'video3.mp4'" >> list.txt
 
 # Concatenate
 ffmpeg -f concat -safe 0 -i list.txt -c copy output.mp4
+```
+
+**Method 1b: Concat demuxer with ffconcat header (advanced):**
+```bash
+# filelist.txt with official ffconcat format:
+# ffconcat version 1.0
+# file segment1.mp4
+# duration 5.0
+# file segment2.mp4
+# inpoint 2.0
+# outpoint 8.0
+# file segment3.mp4
+
+ffmpeg -f concat -safe 0 -i filelist.txt -c copy output.mp4
 ```
 
 **Method 2: Concat filter (different formats):**
@@ -597,39 +622,60 @@ done
 
 ## Command Structure Reference
 
-### Basic Command Pattern
+### Official CLI Grammar
 
-```bash
-ffmpeg [global options] [input options] -i input.file [output options] output.file
 ```
+ffmpeg [global_options] {[input_file_options] -i input_url} ... {[output_file_options] output_url} ...
+```
+
+> Options are positional: input options apply to next `-i`, output options apply to next output file.
 
 ### Common Global Options
 
-- `-y` - Overwrite output file without asking
-- `-n` - Never overwrite output file
-- `-v quiet` - Suppress output messages
-- `-stats` - Show encoding statistics
-- `-threads 0` - Use all CPU cores
+| Option | Description |
+|--------|-------------|
+| `-y` | Overwrite output file without asking |
+| `-n` | Never overwrite output file |
+| `-v quiet` | Suppress output messages |
+| `-stats` | Show encoding statistics |
+| `-threads 0` | Use all CPU cores |
 
 ### Common Input Options
 
-- `-ss 5` - Start reading from 5 seconds
-- `-t 10` - Read only 10 seconds
-- `-to 15` - Read until 15 seconds
+| Option | Description |
+|--------|-------------|
+| `-ss 5` | Seek to 5 seconds (fast, keyframe-accurate) |
+| `-t 10` | Read only 10 seconds |
+| `-to 15` | Read until 15 seconds |
+| `-stream_loop -1` | Loop input infinitely |
 
 ### Common Output Options
 
-- `-c:v libx264` - Video codec
-- `-c:a aac` - Audio codec
-- `-c copy` - Copy streams without re-encoding
-- `-b:v 2M` - Video bitrate
-- `-b:a 192k` - Audio bitrate
-- `-crf 23` - Constant Rate Factor (quality)
-- `-preset medium` - Encoding speed vs quality
-- `-pix_fmt yuv420p` - Pixel format (for compatibility)
-- `-map 0:v` - Map video stream from first input
-- `-map 0:a` - Map audio stream from first input
-- `-shortest` - Finish when shortest input ends
+| Option | Description |
+|--------|-------------|
+| `-c:v libx264` | Video codec |
+| `-c:a aac` | Audio codec |
+| `-c copy` | Copy streams without re-encoding |
+| `-b:v 2M` | Video bitrate (2 Mbps) |
+| `-b:a 192k` | Audio bitrate (192 kbps) |
+| `-crf 23` | Quality (0=lossless, 51=worst) |
+| `-preset medium` | Speed vs quality tradeoff |
+| `-pix_fmt yuv420p` | Pixel format (compatibility) |
+| `-movflags +faststart` | Web-optimized MP4 |
+| `-map 0:v` | Map video from first input |
+| `-map 0:a` | Map audio from first input |
+| `-shortest` | Stop at shortest input |
+
+### Stream Specifiers
+
+```bash
+-c:v libx264     # All video streams
+-c:a:0 aac       # First audio stream only
+-b:v:1 1M        # Second video stream bitrate
+-map 0:a:1        # Second audio from first input
+```
+
+> **Critical**: Using `-map` disables automatic stream selection. Map ALL desired streams explicitly.
 
 ---
 

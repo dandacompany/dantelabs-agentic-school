@@ -23,12 +23,88 @@ ffmpeg -version
 - Linux: `apt-get install ffmpeg` or `yum install ffmpeg`
 - Windows: Download from ffmpeg.org
 
-## Quick Start
+## Official CLI Syntax
 
-### Basic Command Structure
+### Command Structure
+
+```
+ffmpeg [global_options] {[input_file_options] -i input_url} ... {[output_file_options] output_url} ...
+```
+
+> **Critical Rule**: Options are positional. Input options apply ONLY to the next `-i`. Output options apply ONLY to the next output file. Misordering options causes silent misbehavior.
 
 ```bash
-ffmpeg [global options] [input options] -i input.file [output options] output.file
+# CORRECT: -ss seeks input (fast), -t limits output duration
+ffmpeg -y -ss 5 -i input.mp4 -t 10 -c:v libx264 output.mp4
+#      ^   ^                   ^                    ^
+#      |   input option        output options       output file
+#      global option
+
+# DIFFERENT BEHAVIOR: -ss after -i seeks output (slow but accurate)
+ffmpeg -y -i input.mp4 -ss 5 -t 10 -c:v libx264 output.mp4
+```
+
+### Stream Specifiers
+
+Target specific streams with `-option:stream_specifier`:
+
+| Pattern | Meaning | Example |
+|---------|---------|---------|
+| `v` | All video streams | `-c:v libx264` |
+| `a` | All audio streams | `-c:a aac` |
+| `s` | All subtitle streams | `-c:s mov_text` |
+| `v:0` | First video stream | `-b:v:0 2M` |
+| `a:1` | Second audio stream | `-c:a:1 copy` |
+
+### Stream Mapping
+
+```bash
+# Without -map: auto-selects best video + best audio + first subtitle
+ffmpeg -i input.mp4 output.mp4
+
+# With -map: auto-selection DISABLED — must map ALL desired streams
+ffmpeg -i input.mp4 -map 0:v -map 0:a output.mp4
+
+# Multiple inputs: video from first, audio from second
+ffmpeg -i video.mp4 -i audio.mp3 -map 0:v -map 1:a output.mp4
+```
+
+> **Gotcha**: Using `-map` once disables auto-selection. Forgetting to map audio = silent output.
+
+### Seeking Behavior
+
+| Position | Speed | Accuracy | Use Case |
+|----------|-------|----------|----------|
+| `-ss` before `-i` | Fast (keyframe seek) | Approximate | Stream copy, rough cuts |
+| `-ss` after `-i` | Slow (decode & discard) | Frame-exact | Precise editing |
+| Both combined | Fast + Accurate | Best of both | Recommended for re-encode |
+
+```bash
+# Fast seeking (good with -c copy)
+ffmpeg -ss 30 -i input.mp4 -t 10 -c copy output.mp4
+
+# Accurate seeking (re-encode required)
+ffmpeg -i input.mp4 -ss 30 -t 10 -c:v libx264 -c:a aac output.mp4
+
+# Combined: fast jump + fine-tune
+ffmpeg -ss 29 -i input.mp4 -ss 1 -t 10 -c:v libx264 -c:a aac output.mp4
+```
+
+### Stream Copy vs Re-encoding
+
+| | `-c copy` | Re-encode (`-c:v libx264`) |
+|---|-----------|---------------------------|
+| Speed | Very fast | Slow |
+| Quality | Lossless (original) | Depends on settings |
+| Filters | Cannot use | Required for filters |
+| Cut accuracy | Keyframe only | Frame-exact |
+
+```bash
+# Stream copy (fast, no quality loss, no filters)
+ffmpeg -i input.mp4 -c copy output.mp4
+
+# Re-encode video only (allows video filters, copies audio)
+ffmpeg -i input.mp4 -vf "scale=1280:720" -c:v libx264 -c:a copy output.mp4
 ```
 
 ### Common Patterns
@@ -52,7 +128,7 @@ ffmpeg -i input.mp4 -vf "filter_name=param=value" -c:a copy output.mp4
 ```bash
 ffmpeg -i input1.mp4 -i input2.mp4 \
   -filter_complex "[0:v][1:v]filter_name[out]" \
-  -map "[out]" output.mp4
+  -map "[out]" -map 0:a output.mp4
 ```
 
 ## Core Operations
@@ -541,27 +617,43 @@ ffmpeg -i video.mp4 -i stamp.png \
 
 Extract portion of video between specified times.
 
-**Extract from 5 to 15 seconds:**
+**Fast cut (keyframe-accurate, input seeking):**
 ```bash
-ffmpeg -i input.mp4 -ss 5 -to 15 -c copy output.mp4
+ffmpeg -ss 5 -i input.mp4 -t 10 -c copy output.mp4
 ```
 
-**Extract 10 seconds starting at 5 seconds:**
-```bash
-ffmpeg -i input.mp4 -ss 5 -t 10 -c copy output.mp4
-```
-
-**Accurate cutting (re-encode, slower but precise):**
+**Accurate cut (frame-exact, output seeking + re-encode):**
 ```bash
 ffmpeg -i input.mp4 -ss 5 -t 10 -c:v libx264 -c:a aac output.mp4
 ```
 
+**Combined seeking (fast + accurate):**
+```bash
+ffmpeg -ss 4 -i input.mp4 -ss 1 -t 10 -c:v libx264 -c:a aac output.mp4
+```
+
+**Extract from 5 to 15 seconds:**
+```bash
+ffmpeg -ss 5 -i input.mp4 -to 10 -c copy output.mp4
+```
+
+**Time duration formats:**
+```bash
+-ss 01:23:45.678   # HH:MM:SS.mmm
+-ss 5:30            # MM:SS (5 min 30 sec)
+-ss 90              # seconds (numeric)
+-ss 5500ms          # milliseconds with suffix
+```
+
 **Parameters:**
-- `-ss` - Start time (seconds or HH:MM:SS format)
-- `-to` - End time
-- `-t` - Duration
+- `-ss` before `-i` - Input seeking (fast, keyframe-accurate)
+- `-ss` after `-i` - Output seeking (slow, frame-accurate)
+- `-to` - End time (absolute when `-ss` is after `-i`, relative when before)
+- `-t` - Duration (always relative from seek point)
 - `-c copy` - Stream copy (fast, keyframe-accurate only)
 - `-c:v libx264` - Re-encode for frame-accurate cutting
+
+> **Gotcha**: `-to` behaves differently depending on `-ss` position. With input seeking (`-ss` before `-i`), `-to` becomes relative to the new start.
 
 ### 13. Probe Media Information
 
@@ -631,35 +723,66 @@ ffmpeg -i left.mp4 -i right.mp4 \
 
 ### Quality Control
 
-**CRF (Constant Rate Factor) - recommended:**
+**CRF (Constant Rate Factor) — recommended for local files:**
+
+| CRF | Quality | Use Case |
+|-----|---------|----------|
+| 0 | Lossless | Archival |
+| 18 | Visually lossless | Professional editing |
+| 23 | Good (default) | General purpose |
+| 28 | Acceptable | Web distribution |
+| 51 | Worst | (not recommended) |
+
 ```bash
-# Lower = better quality (18-28 range)
-# 18: visually lossless
-# 23: default, good quality
-# 28: acceptable for web
 ffmpeg -i input.mp4 -c:v libx264 -crf 23 -preset medium -c:a aac output.mp4
 ```
 
-**Bitrate control:**
+**Constrained bitrate — recommended for streaming:**
 ```bash
-ffmpeg -i input.mp4 -c:v libx264 -b:v 2M -c:a aac -b:a 192k output.mp4
+# Average bitrate with buffer control
+ffmpeg -i input.mp4 -c:v libx264 -b:v 2M -maxrate 2.5M -bufsize 5M -c:a aac output.mp4
 ```
 
-**Two-pass encoding:**
+> **Gotcha**: `-b:v 2M` = 2 Megabits/s (not bytes). FFmpeg uses bits/s. Use `K`, `M`, `G` suffixes.
+
+**Two-pass encoding (best quality at target bitrate):**
 ```bash
-# Pass 1
+# Pass 1 (analysis only — output to /dev/null)
 ffmpeg -i input.mp4 -c:v libx264 -b:v 2M -pass 1 -f null /dev/null
 
-# Pass 2
+# Pass 2 (actual encoding using analysis)
 ffmpeg -i input.mp4 -c:v libx264 -b:v 2M -pass 2 -c:a aac output.mp4
 ```
 
-**Encoding presets:**
-- `ultrafast` - Fastest, lowest quality
-- `fast` - Good speed/quality balance
-- `medium` - Default, balanced
-- `slow` - Better quality, slower
-- `veryslow` - Best quality, very slow
+**Encoding presets** (speed → quality tradeoff):
+
+`ultrafast` > `superfast` > `veryfast` > `faster` > `fast` > `medium` > `slow` > `slower` > `veryslow`
+
+**Tunes** (content-type optimization):
+```bash
+# Animation
+ffmpeg -i input.mp4 -c:v libx264 -crf 20 -tune animation output.mp4
+
+# Screen recording
+ffmpeg -i input.mp4 -c:v libx264 -crf 18 -tune stillimage output.mp4
+
+# Streaming (low latency)
+ffmpeg -i input.mp4 -c:v libx264 -preset fast -tune zerolatency output.mp4
+```
+
+**Audio codec options:**
+```bash
+# AAC at 192kbps
+-c:a aac -b:a 192k
+
+# MP3 VBR high quality (~190kbps average)
+-c:a libmp3lame -q:a 2
+
+# MP3 CBR 192kbps
+-c:a libmp3lame -b:a 192k
+```
+
+> **Gotcha**: VBR (`-q:a`) and CBR (`-b:a`) are mutually exclusive for MP3. Don't use both.
 
 ### Hardware Acceleration
 
@@ -741,6 +864,24 @@ ffmpeg -i input.mp4 -map_metadata -1 -c copy output.mp4
 
 ## Reference Documentation
 
+### Official Syntax Reference
+
+For authoritative FFmpeg syntax rules extracted from official documentation (ffmpeg.org), consult:
+
+```bash
+references/ffmpeg-syntax-reference.md
+```
+
+This includes:
+- CLI grammar and option ordering rules
+- Stream specifier syntax (all patterns)
+- Stream mapping and auto-selection behavior
+- Seeking behavior (input vs output seeking)
+- Time duration, color, size, expression syntax
+- Codec options with valid ranges (libx264, AAC, libmp3lame)
+- Format options (concat demuxer, probing)
+- Critical gotchas and common mistakes
+
 ### Detailed Filter Reference
 
 For comprehensive documentation on all FFmpeg filters, parameters, and advanced usage patterns, consult:
@@ -752,7 +893,8 @@ references/ffmpeg-filters.md
 This includes:
 - Video filters: drawtext, fade, xfade, scale, overlay, pad, rotate, etc.
 - Audio filters: afade, amix, acrossfade, volume, aformat, etc.
-- Filter graph syntax and expressions
+- Filter graph syntax hierarchy and escaping rules
+- Expression evaluation (variables, functions, constants)
 - Performance tips and common pitfalls
 - Version compatibility information
 
@@ -774,11 +916,9 @@ This includes:
 - Batch processing scripts
 
 **Access references when:**
-- Detailed filter parameters are needed
-- Troubleshooting complex filter chains
-- Looking for advanced techniques
-- Optimizing encoding quality
-- Dealing with compatibility issues
+- Need accurate syntax rules → `ffmpeg-syntax-reference.md`
+- Need filter parameters or escaping rules → `ffmpeg-filters.md`
+- Need real-world command examples → `common-recipes.md`
 
 ## Version Requirements
 
