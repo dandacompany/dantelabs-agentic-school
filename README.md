@@ -6,7 +6,7 @@
 
 이 프로젝트는 **GTM Agents 스타일의 전략 에이전트**와 **실제 생성/분석 도구**를 통합하여, **엔드투엔드 비즈니스 자동화**를 제공합니다.
 
-현재 **마케팅 자동화**(8개), **데이터 사이언스**(9개), **GCP 클라우드**(1개) 플러그인이 구현되어 있으며, 향후 **일반 비즈니스** 등으로 확장될 예정입니다.
+현재 **마케팅 자동화**(8개), **데이터 사이언스**(9개), **GCP 클라우드**(1개), **미디어 제작**(1개) 플러그인이 구현되어 있으며, 향후 **일반 비즈니스** 등으로 확장될 예정입니다.
 
 ## 지원 영역
 
@@ -15,6 +15,7 @@
 | 🎯 Marketing | ✅ 구현완료 | 브랜드 분석 → 크리에이티브 제작 | 8개 |
 | 📊 Data Science | ✅ 구현완료 | 데이터 분석 → 모델 학습 → 배포 | 9개 |
 | ☁️ GCP | ✅ 구현완료 | GCP VM 배포 가이드 및 자동화 | 1개 |
+| 🎵 Media | ✅ 구현완료 | AI 음성 생성 및 사운드 이펙트 | 1개 |
 | 💼 Business Ops | 🔜 예정 | 워크플로우 → 자동화 → 리포팅 | - |
 
 ## 특징
@@ -345,10 +346,10 @@ python ~/.claude/skills/kie-video-generator/scripts/generate_video.py --credits
 
 | 항목 | 개수 |
 | --- | --- |
-| 플러그인 | 19개 (common 1 + marketing 8 + data-science 9 + gcp 1) |
+| 플러그인 | 20개 (common 1 + marketing 8 + data-science 9 + gcp 1 + media 1) |
 | 에이전트 | 15개 |
-| 커맨드 | 20개 |
-| 스킬 | 29개 (common 6 + marketing 13 + data-science 9 + gcp 1) |
+| 커맨드 | 23개 |
+| 스킬 | 30개 (common 6 + marketing 13 + data-science 9 + gcp 1 + media 1) |
 
 ## 플러그인 목록
 
@@ -729,6 +730,77 @@ GCP VM 인스턴스에 OpenClaw를 배포하는 포괄적인 가이드입니다.
     ↓
 7. SSH 터널링으로 대시보드 접속
 ```
+
+---
+
+## 🎵 Media Plugins
+
+AI 기반 오디오 제작 도구를 제공합니다.
+
+### media-fx
+
+ElevenLabs AI API를 통한 고품질 음성 생성 및 사운드 이펙트 제작 도구입니다.
+
+| 컴포넌트 | 이름 | 설명 |
+| --- | --- | --- |
+| Command | /generate-speech | 텍스트를 자연스러운 음성으로 변환 (29개 언어) |
+| Command | /generate-sound-effect | 텍스트 설명으로 사운드 이펙트 생성 |
+| Command | /list-voices | 사용 가능한 음성 목록 조회 및 필터링 |
+| Skill | elevenlabs-api | ElevenLabs API 전체 가이드 (TTS, Sound Effects, Voice Management) |
+
+#### 주요 기능
+
+**1. Text-to-Speech (TTS)**
+- 29개 이상 언어 지원 (한국어, 영어, 일본어 등)
+- 음성 설정 커스터마이징 (stability, similarity, style, speed)
+- 다양한 출력 포맷 (MP3, WAV, PCM, Opus)
+- 스트리밍 TTS (WebSocket)
+
+**2. Sound Effects**
+- 텍스트 설명으로 사운드 이펙트 생성
+- 0.5~30초 길이 조절 가능
+- 루프 사운드 생성 지원
+- 게임, 영화, Foley 사운드 등 다양한 용도
+
+**3. Voice Management**
+- 사용 가능한 음성 목록 조회
+- 필터링 (성별, 억양, 나이, 용도)
+- 음성 샘플 다운로드
+- 커스텀 음성 클론 (Instant & Professional)
+
+#### 사용 예시
+
+```bash
+# 플러그인 설치
+npx dantelabs-agentic-school install media-fx
+
+# 텍스트를 음성으로 변환
+/generate-speech --text "안녕하세요, ElevenLabs 음성입니다." --output hello.mp3
+
+# 사운드 이펙트 생성
+/generate-sound-effect --description "빗소리와 천둥소리" --duration 10.0 --output rain.mp3
+
+# 음성 목록 조회
+/list-voices --gender female --accent american
+```
+
+#### 인증 설정
+
+`~/.claude/auth/elevenlabs.env` 파일 생성:
+
+```bash
+ELEVENLABS_API_KEY=your_api_key_here
+ELEVENLABS_BASE_URL=https://api.elevenlabs.io/v1/
+```
+
+#### 활용 시나리오
+
+| 시나리오 | 용도 | 예시 |
+| --- | --- | --- |
+| **팟캐스트/오디오북** | 내레이션 생성 | 긴 텍스트를 자연스러운 음성으로 변환 |
+| **게임 개발** | 효과음/대사 | 캐릭터 대사, 배경음, 효과음 생성 |
+| **영상 제작** | 보이스오버 | 다국어 보이스오버, Foley 사운드 |
+| **마케팅** | 광고 음성 | 제품 홍보 음성, 브랜드 음성 클론 |
 
 ---
 

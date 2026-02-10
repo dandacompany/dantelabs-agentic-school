@@ -12,11 +12,11 @@ ElevenLabs AI API를 활용하여 고품질 음성 생성, 사운드 이펙트, 
 ## 📥 스킬 다운로드
 
 ```bash
-# Claude Code CLI를 통한 설치
-dantelabs install media-fx
+# NPX로 플러그인 설치 (권장)
+npx dantelabs-agentic-school install media-fx
 
-# 또는 직접 설치
-dlas install media-fx
+# 또는 전체 플러그인 설치
+npx dantelabs-agentic-school install
 ```
 
 ## 🔐 인증 설정
