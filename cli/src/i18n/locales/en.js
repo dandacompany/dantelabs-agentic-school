@@ -70,7 +70,7 @@ export default {
     optionVerbose: 'Show detailed information',
     title: 'Dante Labs Agentic School - Available Plugins',
     summaryText: '{plugins} plugins, {agents} agents, {commands} commands, {skills} skills',
-    installHint: 'Install: npx dantelabs-agentic-school install [plugin-name]'
+    installHint: 'Install: npx dlabs install [plugin-name]'
   },
 
   // Info command

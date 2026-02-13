@@ -70,7 +70,7 @@ export default {
     optionVerbose: '상세 정보 표시',
     title: 'Dante Labs Agentic School - 플러그인 목록',
     summaryText: '플러그인 {plugins}개, 에이전트 {agents}개, 명령어 {commands}개, 스킬 {skills}개',
-    installHint: '설치: npx dantelabs-agentic-school install [플러그인명]'
+    installHint: '설치: npx dlabs install [플러그인명]'
   },
 
   // Info command

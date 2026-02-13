@@ -49,29 +49,28 @@ program
   .addHelpText('after', `
 ${chalk.bold(t('cli.examples'))}
   ${chalk.gray(t('cli.installAllPlugins'))}
-  $ npx dantelabs-agentic-school install
+  $ npx dlabs install
 
   ${chalk.gray(t('cli.installSpecificPlugin'))}
-  $ npx dantelabs-agentic-school install brand-analytics
+  $ npx dlabs install brand-analytics
 
   ${chalk.gray(t('cli.installCustomPath'))}
-  $ npx dantelabs-agentic-school install --path ./my-project
+  $ npx dlabs install --path ./my-project
 
   ${chalk.gray(t('cli.listPlugins'))}
-  $ npx dantelabs-agentic-school list
+  $ npx dlabs list
 
   ${chalk.gray(t('cli.showPluginInfo'))}
-  $ npx dantelabs-agentic-school info brand-analytics
+  $ npx dlabs info brand-analytics
 
   ${chalk.gray('# Download samples')}
-  $ npx dantelabs-agentic-school sample marketing
-  $ npx dantelabs-agentic-school sample --all
+  $ npx dlabs sample marketing
 
   ${chalk.gray('# Install for OpenClaw (~/.openclaw/skills/)')}
-  $ npx dantelabs-agentic-school install trading-tools -t openclaw
+  $ npx dlabs install trading-tools -t openclaw
 
   ${chalk.gray('# Korean language')}
-  $ npx dantelabs-agentic-school --lang ko list
+  $ npx dlabs --lang ko list
 
 ${chalk.bold(t('cli.moreInfo'))}: https://github.com/dandacompany/dantelabs-agentic-school
   `);

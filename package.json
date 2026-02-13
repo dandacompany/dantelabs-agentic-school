@@ -6,6 +6,7 @@
   "type": "module",
   "bin": {
     "dantelabs": "./cli/bin/cli.js",
+    "dlabs": "./cli/bin/cli.js",
     "dlas": "./cli/bin/cli.js"
   },
   "scripts": {
