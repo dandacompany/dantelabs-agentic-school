@@ -8,6 +8,7 @@ import { mkdir } from 'fs/promises';
 import { getMarketplaceConfig, getPluginDependencies } from '../lib/config.js';
 import { installPlugin } from '../lib/installer.js';
 import { getPlatformConfig, getDefaultTargetPath, PLATFORM_NAMES, DEFAULT_PLATFORM } from '../lib/platforms.js';
+import { runInteractiveInstall } from '../lib/interactive-installer.js';
 import logger from '../utils/logger.js';
 import { resolvePath } from '../utils/fs-utils.js';
 import { t } from '../i18n/index.js';
@@ -65,9 +66,109 @@ export default function installCommand(program) {
 
         // Determine which plugins to install
         let pluginsToInstall = [];
+        let interactiveResult = null;
 
-        if (options.all || !pluginName) {
-          // Install all plugins
+        if (!pluginName && !options.all) {
+          // ─── Interactive mode: no plugin name, no --all flag ───
+          interactiveResult = await runInteractiveInstall(config);
+
+          if (!interactiveResult) {
+            logger.info(t('install.installCancelled'));
+            return;
+          }
+
+          pluginsToInstall = interactiveResult.pluginsToInstall;
+
+          // Override platform and path from interactive selections
+          const effectivePlatform = interactiveResult.platform;
+          const effectivePlatformConfig = getPlatformConfig(effectivePlatform);
+          const effectiveBaseDir = join(interactiveResult.targetPath, effectivePlatformConfig.dir);
+
+          if (interactiveResult.force) {
+            options.force = true;
+          }
+
+          // Create base directory
+          if (!existsSync(effectiveBaseDir)) {
+            await mkdir(effectiveBaseDir, { recursive: true });
+          }
+
+          // Install each plugin with interactive selections
+          let totalAgents = 0;
+          let totalCommands = 0;
+          let totalSkills = 0;
+          let totalSkippedAgents = 0;
+          let totalSkippedCommands = 0;
+
+          for (const plugin of pluginsToInstall) {
+            spinner.start(t('install.installing', { name: chalk.cyan(plugin.name) }));
+
+            try {
+              const componentFilter = interactiveResult.componentSelections[plugin.name] || null;
+
+              const results = await installPlugin(plugin, effectiveBaseDir, {
+                force: options.force,
+                platform: effectivePlatform,
+                componentFilter,
+                onProgress: (type, name) => {
+                  spinner.text = t('install.installingComponent', {
+                    plugin: chalk.cyan(plugin.name),
+                    type,
+                    name
+                  });
+                }
+              });
+
+              totalAgents += results.agents;
+              totalCommands += results.commands;
+              totalSkills += results.skills;
+              totalSkippedAgents += results.skippedAgents;
+              totalSkippedCommands += results.skippedCommands;
+
+              spinner.succeed(t('install.installed', { name: chalk.cyan(plugin.name) }));
+            } catch (err) {
+              spinner.fail(
+                t('install.failedToInstall', {
+                  name: plugin.name,
+                  error: err.message
+                })
+              );
+              if (!options.force) throw err;
+            }
+          }
+
+          // Summary
+          console.log();
+          logger.success(
+            t('install.successMessage', { count: pluginsToInstall.length })
+          );
+          console.log(
+            chalk.gray(
+              `  ${t('install.componentSummary', {
+                agents: totalAgents,
+                commands: totalCommands,
+                skills: totalSkills
+              })}`
+            )
+          );
+
+          if (totalSkippedAgents > 0 || totalSkippedCommands > 0) {
+            console.log(
+              chalk.yellow(
+                `  ${t('install.skippedComponents', {
+                  agents: totalSkippedAgents,
+                  commands: totalSkippedCommands,
+                  platform: effectivePlatformConfig.name
+                })}`
+              )
+            );
+          }
+
+          console.log();
+          console.log(`${t('common.location')}: ${chalk.cyan(effectiveBaseDir)}`);
+          return;
+        } else if (options.all) {
+          // Install all plugins (existing behavior)
           const { confirm } = await inquirer.prompt([
             {
               type: 'confirm',

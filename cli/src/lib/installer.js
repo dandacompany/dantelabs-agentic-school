@@ -144,7 +144,7 @@ function getSourcePath(plugin) {
  *   └── skills/{skill-name}/
  */
 export async function installPlugin(plugin, claudeDir, options = {}) {
-  const { force = false, onProgress, platform = DEFAULT_PLATFORM } = options;
+  const { force = false, onProgress, platform = DEFAULT_PLATFORM, componentFilter = null } = options;
   const pluginName = plugin.name;
   const sourcePath = getSourcePath(plugin); // e.g., "plugins/brand-analytics"
   const platformConfig = getPlatformConfig(platform);
@@ -160,6 +160,19 @@ export async function installPlugin(plugin, claudeDir, options = {}) {
       components = await discoverComponents(localSourcePath);
     } else {
       components = await discoverRemoteComponents(sourcePath);
+    }
+  }
+
+  // Apply component filter if provided (for selective installation)
+  if (componentFilter) {
+    if (componentFilter.agents) {
+      components = { ...components, agents: components.agents?.filter(a => componentFilter.agents.includes(a)) || [] };
+    }
+    if (componentFilter.commands) {
+      components = { ...components, commands: components.commands?.filter(c => componentFilter.commands.includes(c)) || [] };
+    }
+    if (componentFilter.skills) {
+      components = { ...components, skills: components.skills?.filter(s => componentFilter.skills.includes(s)) || [] };
     }
   }
 

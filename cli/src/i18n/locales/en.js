@@ -129,6 +129,40 @@ export default {
     fetchError: 'Failed to fetch sample list'
   },
 
+  // Interactive installer
+  interactive: {
+    selectPlatform: 'Select target platform',
+    global: '[Global]',
+    selectScope: 'Select installation scope',
+    scopeProject: 'Project (current directory)',
+    scopeGlobal: 'Global (home directory)',
+    scopeCustom: 'Custom path',
+    enterCustomPath: 'Enter installation path:',
+    pathNotFound: 'Path not found: {path}. Create it?',
+    selectPlugins: 'Select plugins to install (Space to select, Enter to confirm)',
+    selectAtLeastOne: 'Please select at least one plugin',
+    installed: 'installed',
+    loadingComponents: 'Loading component information...',
+    componentsLoaded: 'Component information loaded',
+    wantComponentSelection: 'Some plugins have multiple component types. Select individual components?',
+    selectComponents: 'Select components for {plugin}',
+    alreadyInstalledWarning: 'The following plugins are already installed:',
+    alreadyInstalled: '{name} is already installed',
+    updateAction: 'How to handle already-installed plugins?',
+    updateAll: 'Update (overwrite)',
+    skipInstalled: 'Skip installed',
+    cancelInstall: 'Cancel installation',
+    nothingToInstall: 'No plugins to install after skipping',
+    includeCommon: 'Include common utilities? (recommended for first install)',
+    commonAlreadyInstalled: 'common is already installed',
+    summaryTitle: 'Installation Summary',
+    summaryPlatform: 'Platform',
+    summaryTarget: 'Target',
+    summaryPluginCount: '{count} plugin(s)',
+    update: 'update',
+    confirmProceed: 'Proceed with installation?'
+  },
+
   // Logger
   logger: {
     info: 'info',

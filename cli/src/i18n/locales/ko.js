@@ -129,6 +129,40 @@ export default {
     fetchError: '샘플 목록을 불러오는 데 실패했습니다'
   },
 
+  // Interactive installer
+  interactive: {
+    selectPlatform: '설치할 플랫폼을 선택하세요',
+    global: '[전역]',
+    selectScope: '설치 범위를 선택하세요',
+    scopeProject: '프로젝트 (현재 디렉토리)',
+    scopeGlobal: '전역 (홈 디렉토리)',
+    scopeCustom: '사용자 지정 경로',
+    enterCustomPath: '설치 경로를 입력하세요:',
+    pathNotFound: '경로를 찾을 수 없습니다: {path}. 생성할까요?',
+    selectPlugins: '설치할 플러그인을 선택하세요 (Space로 선택, Enter로 확인)',
+    selectAtLeastOne: '최소 1개 플러그인을 선택해주세요',
+    installed: '설치됨',
+    loadingComponents: '컴포넌트 정보를 불러오는 중...',
+    componentsLoaded: '컴포넌트 정보 로드 완료',
+    wantComponentSelection: '일부 플러그인에 여러 컴포넌트 유형이 있습니다. 개별 컴포넌트를 선택할까요?',
+    selectComponents: '{plugin}의 컴포넌트를 선택하세요',
+    alreadyInstalledWarning: '다음 플러그인이 이미 설치되어 있습니다:',
+    alreadyInstalled: '{name}이(가) 이미 설치되어 있습니다',
+    updateAction: '이미 설치된 플러그인을 어떻게 처리할까요?',
+    updateAll: '업데이트 (덮어쓰기)',
+    skipInstalled: '설치된 항목 건너뛰기',
+    cancelInstall: '설치 취소',
+    nothingToInstall: '건너뛴 후 설치할 플러그인이 없습니다',
+    includeCommon: 'common 유틸리티를 포함할까요? (첫 설치 시 권장)',
+    commonAlreadyInstalled: 'common이 이미 설치되어 있습니다',
+    summaryTitle: '설치 요약',
+    summaryPlatform: '플랫폼',
+    summaryTarget: '설치 경로',
+    summaryPluginCount: '{count}개 플러그인',
+    update: '업데이트',
+    confirmProceed: '설치를 진행할까요?'
+  },
+
   // Logger
   logger: {
     info: '정보',
