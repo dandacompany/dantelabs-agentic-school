@@ -1,6 +1,6 @@
 {
   "name": "dlabs",
-  "version": "1.8.1",
+  "version": "2.0.0",
   "description": "Dante Labs Agentic School - AI Agent Skill Installer for Claude Code, Gemini, OpenClaw and more",
   "main": "cli/src/index.js",
   "type": "module",
