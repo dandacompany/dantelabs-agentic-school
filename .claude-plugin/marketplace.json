@@ -151,6 +151,13 @@
       "version": "1.0.0",
       "source": "./plugins/media/media-fx",
       "category": "media"
+    },
+    {
+      "name": "trading-tools",
+      "description": "한국 주식 트레이딩 도구 모음. 키움증권 REST API를 통한 주식 데이터 조회/매매, OpenDART를 통한 기업 공시/재무제표 조회를 지원합니다.",
+      "version": "1.0.0",
+      "source": "./plugins/trading/trading-tools",
+      "category": "trading"
     }
   ],
   "categories": [
@@ -158,7 +165,8 @@
     "marketing",
     "data-science",
     "gcp",
-    "media"
+    "media",
+    "trading"
   ],
   "tags": [
     "agentic-business",
@@ -197,6 +205,14 @@
     "whisper",
     "stt",
     "ffmpeg",
-    "video-processing"
+    "video-processing",
+    "trading",
+    "stock",
+    "kiwoom",
+    "opendart",
+    "dart",
+    "korea-stock",
+    "financial-data",
+    "disclosure"
   ]
 }

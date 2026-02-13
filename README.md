@@ -6,7 +6,7 @@
 
 이 프로젝트는 **GTM Agents 스타일의 전략 에이전트**와 **실제 생성/분석 도구**를 통합하여, **엔드투엔드 비즈니스 자동화**를 제공합니다.
 
-현재 **마케팅 자동화**(8개), **데이터 사이언스**(9개), **GCP 클라우드**(1개), **미디어 제작**(1개) 플러그인이 구현되어 있으며, 향후 **일반 비즈니스** 등으로 확장될 예정입니다.
+현재 **마케팅 자동화**(8개), **데이터 사이언스**(9개), **GCP 클라우드**(1개), **미디어 제작**(1개), **트레이딩**(1개) 플러그인이 구현되어 있으며, 향후 **일반 비즈니스** 등으로 확장될 예정입니다.
 
 ## 지원 영역
 
@@ -16,6 +16,7 @@
 | 📊 Data Science | ✅ 구현완료 | 데이터 분석 → 모델 학습 → 배포 | 9개 |
 | ☁️ GCP | ✅ 구현완료 | GCP VM 배포 가이드 및 자동화 | 1개 |
 | 🎵 Media | ✅ 구현완료 | AI 음성 생성, 사운드 이펙트, 비디오 편집 | 1개 |
+| 📈 Trading | ✅ 구현완료 | 키움증권 API, OpenDART 공시/재무 데이터 | 1개 |
 | 💼 Business Ops | 🔜 예정 | 워크플로우 → 자동화 → 리포팅 | - |
 
 ## 특징
@@ -346,10 +347,10 @@ python ~/.claude/skills/kie-video-generator/scripts/generate_video.py --credits
 
 | 항목 | 개수 |
 | --- | --- |
-| 플러그인 | 20개 (common 1 + marketing 8 + data-science 9 + gcp 1 + media 1) |
+| 플러그인 | 21개 (common 1 + marketing 8 + data-science 9 + gcp 1 + media 1 + trading 1) |
 | 에이전트 | 15개 |
 | 커맨드 | 23개 |
-| 스킬 | 32개 (common 6 + marketing 13 + data-science 9 + gcp 1 + media 3) |
+| 스킬 | 34개 (common 6 + marketing 13 + data-science 9 + gcp 1 + media 3 + trading 2) |
 
 ## 플러그인 목록
 
@@ -814,6 +815,76 @@ ELEVENLABS_BASE_URL=https://api.elevenlabs.io/v1/
 | **영상 제작** | 보이스오버/편집 | 다국어 보이스오버, 자동 비디오 편집 |
 | **마케팅** | 광고 음성 | 제품 홍보 음성, 브랜드 음성 클론 |
 | **강의 녹화** | 후처리 | 무음/재촬영 제거, TTS 나레이션 교체 |
+
+---
+
+## 📈 Trading Plugins
+
+한국 주식 트레이딩을 위한 API 연동 도구를 제공합니다.
+
+### trading-tools
+
+키움증권 REST API와 OpenDART(금융감독원 전자공시시스템) API를 활용한 주식 데이터 조회 및 거래 도구입니다.
+
+| 컴포넌트 | 이름 | 설명 |
+| --- | --- | --- |
+| Skill | kiwoom-api | 키움증권 REST API (OAuth, 주가 조회, 계좌 자산, 매매 주문) |
+| Skill | opendart-api | OpenDART 기업 공시, 재무제표, 배당정보, 대량보유 조회 |
+
+#### 주요 기능
+
+**1. Kiwoom API**
+- OAuth 2.0 인증 및 토큰 캐싱
+- 주식 기본정보 조회 (ka10001): PER, PBR, ROE, 시가총액 등
+- 계좌 자산 현황 (kt00004): 예수금, 보유종목, 손익률
+- 일별 잔고 수익률 (ka01690): 종목별 비중 및 수익률
+- 매수/매도 주문 (kt10000, kt10001)
+- 모의투자/실전투자 환경 전환
+- 30+ API 엔드포인트 레퍼런스 (시세, 순위, 기관/외국인, 공매도 등)
+
+**2. OpenDART API**
+- 기업 공시 검색 (정기/수시/주요사항)
+- 재무제표 조회 (분기/반기/연간, 개별/연결)
+- 배당 정보 조회
+- 대량보유 현황 (5%+ 지분)
+- 종목코드 ↔ DART 고유번호 변환 스크립트
+- 시가총액 상위 45개 종목 매핑 테이블
+
+#### 사용 예시
+
+```bash
+# 플러그인 설치
+npx dantelabs-agentic-school install trading-tools
+
+# .env 설정
+cp .claude/skills/kiwoom-api/.env.example .env
+# .env 파일에 API Key/Secret 입력
+
+# Python에서 사용
+python3 -c "
+from kiwoom_api_client_template import KiwoomAPIClient
+client = KiwoomAPIClient()
+info = client.get_stock_info('005930')  # 삼성전자
+print(f'{info[\"stk_nm\"]}: {abs(int(info[\"cur_prc\"])):,}원')
+"
+
+# OpenDART 공시 조회
+source .env
+python3 .claude/skills/opendart-api/scripts/get_disclosures.py 00126380 --important
+```
+
+#### 인증 설정
+
+```bash
+# 키움증권 (openapi.kiwoom.com에서 발급)
+TRADING_ENV=mock
+KIWOOM_REST_API_KEY=your_api_key_here
+KIWOOM_REST_API_SECRET=your_api_secret_here
+KIWOOM_ACCOUNT_NO=5012345678
+
+# OpenDART (opendart.fss.or.kr에서 발급)
+DART_API_KEY=your_dart_api_key_here
+```
 
 ---
 
