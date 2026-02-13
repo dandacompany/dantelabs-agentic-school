@@ -13,10 +13,10 @@ ElevenLabs AI API를 활용하여 고품질 음성 생성, 사운드 이펙트, 
 
 ```bash
 # NPX로 플러그인 설치 (권장)
-npx dantelabs-agentic-school install media-fx
+npx dlabs install media-fx
 
 # 또는 전체 플러그인 설치
-npx dantelabs-agentic-school install
+npx dlabs install
 ```
 
 ## 🔐 인증 설정

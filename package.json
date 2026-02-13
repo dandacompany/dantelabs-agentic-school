@@ -1,7 +1,7 @@
 {
-  "name": "dantelabs-agentic-school",
+  "name": "dlabs",
   "version": "1.8.1",
-  "description": "CLI tool for installing Dante Labs agentic plugins for Claude Code",
+  "description": "Dante Labs Agentic School - AI Agent Skill Installer for Claude Code, Gemini, OpenClaw and more",
   "main": "cli/src/index.js",
   "type": "module",
   "bin": {

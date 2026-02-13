@@ -69,7 +69,7 @@ export default function infoCommand(program) {
 
         console.log(
           chalk.gray(`${t('info.installHint')}:`),
-          `npx dantelabs-agentic-school install ${pluginName}`
+          `npx dlabs install ${pluginName}`
         );
       } catch (error) {
         logger.error(error.message);

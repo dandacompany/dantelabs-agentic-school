@@ -14,7 +14,7 @@ tags: [kiwoom, stock, trading, korea, rest-api, oauth]
 ## 설치
 
 ```bash
-npx dantelabs-agentic-school install trading-tools
+npx dlabs install trading-tools
 ```
 
 ## 환경 설정

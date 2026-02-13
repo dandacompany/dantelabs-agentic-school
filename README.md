@@ -34,22 +34,22 @@
 
 ```bash
 # 전체 플러그인 설치
-npx dantelabs-agentic-school install
+npx dlabs install
 
 # 특정 플러그인만 설치
-npx dantelabs-agentic-school install brand-analytics
+npx dlabs install brand-analytics
 
 # 설치 경로 지정
-npx dantelabs-agentic-school install --path ./my-project
+npx dlabs install --path ./my-project
 
 # 플러그인 목록 보기
-npx dantelabs-agentic-school list
+npx dlabs list
 
 # 플러그인 상세 정보
-npx dantelabs-agentic-school info content-creation
+npx dlabs info content-creation
 
 # 플러그인 삭제
-npx dantelabs-agentic-school uninstall brand-analytics
+npx dlabs uninstall brand-analytics
 ```
 
 ### CLI 옵션
@@ -57,9 +57,9 @@ npx dantelabs-agentic-school uninstall brand-analytics
 | 옵션 | 설명 |
 | --- | --- |
 | `--path, -p` | 설치 경로 (기본: 현재 디렉토리) |
-| `--target, -t` | 타겟 플랫폼 (claude, gemini, antigravity, codex, opencode, agents) |
+| `--target, -t` | 타겟 플랫폼 (claude, gemini, antigravity, codex, opencode, openclaw, agents) |
 | `--force, -f` | 기존 파일 덮어쓰기 |
-| `--no-common` | common 유틸리티 제외 |
+| `--common` | common 유틸리티 포함 |
 | `--dry-run` | 미리보기 (실제 설치 안함) |
 | `--json` | JSON 형식 출력 (list, info) |
 | `-v, --verbose` | 상세 정보 표시 |
@@ -71,19 +71,19 @@ npx dantelabs-agentic-school uninstall brand-analytics
 
 ```bash
 # Claude Code (기본값, --target 생략 가능)
-npx dantelabs-agentic-school install gcp-openclaw
+npx dlabs install gcp-openclaw
 
 # Gemini CLI
-npx dantelabs-agentic-school install gcp-openclaw --target gemini
+npx dlabs install gcp-openclaw --target gemini
 
 # Google Antigravity IDE
-npx dantelabs-agentic-school install gcp-openclaw --target antigravity
+npx dlabs install gcp-openclaw --target antigravity
 
 # OpenAI Codex CLI
-npx dantelabs-agentic-school install gcp-openclaw --target codex
+npx dlabs install gcp-openclaw --target codex
 
 # OpenCode
-npx dantelabs-agentic-school install gcp-openclaw --target opencode
+npx dlabs install gcp-openclaw --target opencode
 ```
 
 #### 플랫폼별 호환성
@@ -95,6 +95,7 @@ npx dantelabs-agentic-school install gcp-openclaw --target opencode
 | `antigravity` | `.agent/` | ✅ | ❌ skip | ❌ skip |
 | `codex` | `.agents/` | ✅ | ❌ skip | ❌ skip |
 | `opencode` | `.opencode/` | ✅ | ✅ | ✅ |
+| `openclaw` | `~/.openclaw/` | ✅ | ❌ skip | ❌ skip |
 | `agents` | `.agents/` | ✅ | ❌ skip | ❌ skip |
 
 > **Note**: 모든 플러그인의 Skills는 모든 플랫폼에서 설치됩니다. Agents/Commands는 해당 플랫폼이 지원하지 않으면 자동으로 skip됩니다.
@@ -105,19 +106,19 @@ npx dantelabs-agentic-school install gcp-openclaw --target opencode
 
 ```bash
 # 사용 가능한 샘플 목록 보기
-npx dantelabs-agentic-school sample --list
+npx dlabs sample --list
 
 # 특정 샘플 다운로드
-npx dantelabs-agentic-school sample marketing
+npx dlabs sample marketing
 
 # 전체 샘플 다운로드
-npx dantelabs-agentic-school sample --all
+npx dlabs sample --all
 
 # 다운로드 경로 지정
-npx dantelabs-agentic-school sample marketing --path ./my-project
+npx dlabs sample marketing --path ./my-project
 
 # 기존 파일 덮어쓰기
-npx dantelabs-agentic-school sample marketing --force
+npx dlabs sample marketing --force
 ```
 
 샘플을 다운로드하면 `samples/` 폴더에 학습 자료가 저장됩니다:
@@ -142,7 +143,7 @@ NPX로 설치하면 프로젝트의 `.claude/` 폴더에 플러그인이 설치�
 ```bash
 # 프로젝트 폴더에서 실행
 cd my-project
-npx dantelabs-agentic-school install
+npx dlabs install
 
 # Claude Code 실행 - 자동으로 .claude/ 폴더 인식
 claude
@@ -183,7 +184,7 @@ claude --plugin-dir ./dantelabs-agentic-school
 
 ```bash
 # 홈 디렉토리에 설치
-npx dantelabs-agentic-school install --path ~
+npx dlabs install --path ~
 
 # 이후 모든 프로젝트에서 플러그인 사용 가능
 claude
@@ -781,7 +782,7 @@ ElevenLabs AI API를 통한 고품질 음성 생성, 사운드 이펙트, AI 비
 
 ```bash
 # 플러그인 설치
-npx dantelabs-agentic-school install media-fx
+npx dlabs install media-fx
 
 # 텍스트를 음성으로 변환
 /generate-speech --text "안녕하세요, ElevenLabs 음성입니다." --output hello.mp3
@@ -854,7 +855,7 @@ ELEVENLABS_BASE_URL=https://api.elevenlabs.io/v1/
 
 ```bash
 # 플러그인 설치
-npx dantelabs-agentic-school install trading-tools
+npx dlabs install trading-tools
 
 # .env 설정
 cp .claude/skills/kiwoom-api/.env.example .env

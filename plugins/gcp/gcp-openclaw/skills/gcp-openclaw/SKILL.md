@@ -12,7 +12,7 @@ description: VM 설정, SSH 구성, OpenClaw 설치 및 GOG CLI 설정을 포함
 이 스킬을 프로젝트 루트에 다운로드합니다.
 
 ```bash
-npx dantelabs-agentic-school install gcp-openclaw --target agents --no-common
+npx dlabs install gcp-openclaw --target agents
 ```
 
 > 다른 플랫폼 타겟: `--target claude`, `--target gemini`, `--target antigravity` 등

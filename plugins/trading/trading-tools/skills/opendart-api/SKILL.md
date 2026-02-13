@@ -20,7 +20,7 @@ OpenDART API enables retrieval of:
 ## 설치
 
 ```bash
-npx dantelabs-agentic-school install trading-tools
+npx dlabs install trading-tools
 ```
 
 ## 환경 설정

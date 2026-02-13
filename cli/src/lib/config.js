@@ -183,7 +183,7 @@ async function discoverRemoteComponents(remotePath) {
     const response = await fetch(url, {
       headers: {
         'Accept': 'application/vnd.github.v3+json',
-        'User-Agent': 'dantelabs-agentic-school-cli'
+        'User-Agent': 'dlabs-cli'
       }
     });
     if (!response.ok) return [];
