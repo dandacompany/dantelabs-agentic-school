@@ -1,6 +1,6 @@
 {
   "name": "dantelabs-agentic-school",
-  "version": "1.6.1",
+  "version": "1.7.0",
   "description": "CLI tool for installing Dante Labs agentic plugins for Claude Code",
   "main": "cli/src/index.js",
   "type": "module",
@@ -28,7 +28,11 @@
     "tts",
     "text-to-speech",
     "voice-cloning",
-    "elevenlabs"
+    "elevenlabs",
+    "trading",
+    "kiwoom",
+    "opendart",
+    "korea-stock"
   ],
   "author": {
     "name": "Dante Labs",
