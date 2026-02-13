@@ -100,11 +100,66 @@
 **URL**: `/api/dostk/acnt`
 **Headers**: api-id=kt00004, authorization
 
-### kt00005 - 체결잔고요청
+### kt00005 - 체결잔고요청 (실전투자 전용)
 
 **Method**: POST
 **URL**: `/api/dostk/acnt`
-**Headers**: api-id=kt00005, authorization
+**Content-Type**: application/json;charset=UTF-8
+
+⚠️ **모의투자 미지원** - return_code: 20 반환
+
+**Request Headers**:
+```json
+{
+  "api-id": "kt00005",
+  "authorization": "Bearer {access_token}",
+  "Content-Type": "application/json;charset=UTF-8"
+}
+```
+
+**Request Body**:
+```json
+{
+  "dmst_stex_tp": "KRX"  // 거래소 구분 (KRX, NXT, SOR)
+}
+```
+
+**Response Body (주요 필드)**:
+```json
+{
+  "return_code": 0,
+  "return_msg": "정상적으로 처리되었습니다",
+  "entr": "5000000",              // 예수금
+  "entr_d1": "5000000",           // D+1 예수금
+  "entr_d2": "5000000",           // D+2 예수금
+  "ord_alowa": "5000000",         // 주문가능금액
+  "pymn_alow_amt": "5000000",     // 출금가능금액
+  "ch_uncla": "0",                // 미결제금액
+  "stk_buy_tot_amt": "3000000",   // 총 매입금액
+  "evlt_amt_tot": "3200000",      // 총 평가금액
+  "tot_pl_tot": "+200000",        // 총 평가손익
+  "tot_pl_rt": "6.67",            // 총 손익률
+  "repl_amt": "0",                // 대용금액
+  "crd_grnt_rt": "0.00",          // 신용담보비율
+  "stk_cntr_remn": [              // 종목별 체결잔고
+    {
+      "stk_cd": "005930",         // 종목코드
+      "stk_nm": "삼성전자",         // 종목명
+      "setl_remn": "10",          // 결제잔고
+      "cur_qty": "10",            // 현재잔고
+      "cur_prc": "-56000",        // 현재가
+      "buy_uv": "55000",          // 매입단가
+      "pur_amt": "550000",        // 매입금액
+      "evlt_amt": "560000",       // 평가금액
+      "evltv_prft": "+10000",     // 평가손익
+      "pl_rt": "1.82",            // 손익률
+      "crd_tp": "",               // 신용구분
+      "loan_dt": "",              // 대출일
+      "expr_dt": ""               // 만기일
+    }
+  ]
+}
+```
 
 ---
 

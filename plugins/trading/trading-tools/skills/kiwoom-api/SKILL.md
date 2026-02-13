@@ -254,13 +254,39 @@ for h in daily["holdings"]:
     # buy_ratio, evaluation, eval_ratio, pnl_amount, pnl_pct
 ```
 
+### 체결잔고 조회 (kt00005, get_settlement_balance) - 실전투자 전용
+
+체결된 주문의 결제 잔고, 예수금, 신용/대출 현황:
+
+```python
+# ⚠️ 실전투자 전용 - 모의투자에서는 Exception 발생
+client = KiwoomAPIClient(use_mock=False)  # 실전투자 명시
+data = client.get_settlement_balance()
+
+# 계좌 요약
+s = data["summary"]
+# deposit, deposit_d1, deposit_d2, orderable_cash,
+# withdrawable, unsettled_cash,
+# total_buy_amount, total_evaluation,
+# total_pnl, total_pnl_pct,
+# substitute_amount, credit_collateral_rate
+
+# 종목별 체결잔고
+for h in data["holdings"]:
+    print(f"{h['name']} | 결제잔고: {h['settlement_balance']}주 | 현잔고: {h['current_quantity']}주")
+    # code, name, settlement_balance, current_quantity,
+    # current_price, avg_price, purchase_amount,
+    # evaluation, pnl_amount, pnl_pct,
+    # credit_type, loan_date, expire_date
+```
+
 ### 계좌 API 비교
 
 | API | 메서드 | 모의투자 | 용도 |
 |-----|--------|---------|------|
 | kt00004 | `get_account_evaluation()` | 지원 | 현재 보유종목 + 손익 현황 |
 | ka01690 | `get_daily_balance_pnl()` | 지원 | 특정 일자 잔고 + 종목별 비중 |
-| kt00005 | (미구현) | **미지원** | 체결잔고 (실전투자 전용) |
+| kt00005 | `get_settlement_balance()` | **미지원** | 체결잔고 (실전투자 전용) |
 
 ## Rate Limiting 관리
 
@@ -315,6 +341,7 @@ def get_multiple_stocks(self, stock_codes: list, delay: float = 1.0) -> dict:
 - 주식 기본정보 조회 (ka10001)
 - 계좌평가현황 조회 (kt00004)
 - 일별잔고수익률 조회 (ka01690)
+- 체결잔고 조회 (kt00005, 실전투자 전용)
 - 자산 요약 조회 (kt00004 래핑)
 
 **사용 방법**:
@@ -429,7 +456,7 @@ daily = client.get_daily_balance_pnl("20260207")
 **misc.md** - 기타 API (토큰 발급/폐기) 상세 스펙.
 
 ### assets/
-**kiwoom_api_client_template.py** - 재사용 가능한 Kiwoom API 클라이언트 템플릿. OAuth 인증, 토큰 캐싱, 주식정보(ka10001), 계좌평가(kt00004), 일별잔고(ka01690) API 구현 포함.
+**kiwoom_api_client_template.py** - 재사용 가능한 Kiwoom API 클라이언트 템플릿. OAuth 인증, 토큰 캐싱, 주식정보(ka10001), 계좌평가(kt00004), 일별잔고(ka01690), 체결잔고(kt00005) API 구현 포함.
 
 ## API 엔드포인트 요약
 
@@ -439,7 +466,7 @@ daily = client.get_daily_balance_pnl("20260207")
 | ka10001 | 주식기본정보 | `/api/dostk/stkinfo` | 지원 |
 | kt00004 | 계좌평가현황 | `/api/dostk/acnt` | 지원 |
 | ka01690 | 일별잔고수익률 | `/api/dostk/acnt` | 지원 |
-| kt00005 | 체결잔고 | `/api/dostk/acnt` | **미지원** |
+| kt00005 | 체결잔고 | `/api/dostk/acnt` | **미지원** (실전투자 전용) |
 | kt10000 | 매수주문 | `/api/dostk/ordr` | 지원 |
 | kt10001 | 매도주문 | `/api/dostk/ordr` | 지원 |
 

@@ -6,7 +6,7 @@ import { existsSync } from 'fs';
 
 import { getMarketplaceConfig } from '../lib/config.js';
 import { uninstallPlugin } from '../lib/installer.js';
-import { getPlatformConfig, PLATFORM_NAMES, DEFAULT_PLATFORM } from '../lib/platforms.js';
+import { getPlatformConfig, getDefaultTargetPath, PLATFORM_NAMES, DEFAULT_PLATFORM } from '../lib/platforms.js';
 import logger from '../utils/logger.js';
 import { resolvePath } from '../utils/fs-utils.js';
 import { t } from '../i18n/index.js';
@@ -37,10 +37,10 @@ export default function uninstallCommand(program) {
 
         const platformConfig = getPlatformConfig(platform);
 
-        // Determine path
+        // Determine path (global platforms default to $HOME)
         const targetPath = options.path
           ? resolvePath(options.path)
-          : process.cwd();
+          : getDefaultTargetPath(platform);
         const baseDir = join(targetPath, platformConfig.dir);
 
         // Check if target directory exists

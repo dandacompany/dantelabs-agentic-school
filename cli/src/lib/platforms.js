@@ -1,3 +1,5 @@
+import { homedir } from 'os';
+
 /**
  * Platform definitions for multi-platform skill installation.
  *
@@ -47,6 +49,15 @@ export const PLATFORMS = {
     commands: 'commands',
     description: 'OpenCode AI',
   },
+  openclaw: {
+    name: 'OpenClaw',
+    dir: '.openclaw',
+    skills: 'skills',
+    agents: null,
+    commands: null,
+    global: true,
+    description: 'OpenClaw AI Agent Framework',
+  },
   agents: {
     name: 'Universal (.agents)',
     dir: '.agents',
@@ -77,6 +88,20 @@ export function getPlatformConfig(name) {
     );
   }
   return config;
+}
+
+/**
+ * Get the default target path for a platform.
+ * Global platforms (e.g. openclaw) install to $HOME; others use cwd.
+ * @param {string} platform - Platform key
+ * @returns {string} Default target path
+ */
+export function getDefaultTargetPath(platform) {
+  const config = getPlatformConfig(platform);
+  if (config.global) {
+    return homedir();
+  }
+  return process.cwd();
 }
 
 /**

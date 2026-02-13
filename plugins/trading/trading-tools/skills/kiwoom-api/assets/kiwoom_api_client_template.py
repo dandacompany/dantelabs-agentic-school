@@ -369,6 +369,115 @@ class KiwoomAPIClient:
             "raw": result,
         }
 
+    def get_settlement_balance(self, exchange: str = "KRX") -> Dict:
+        """체결잔고 조회 (kt00005) - 실전투자 전용.
+
+        체결된 주문의 결제 잔고를 조회한다. 예수금, 주문가능금액, 신용/대출 현황,
+        종목별 결제잔고 및 평가손익을 반환한다.
+
+        ⚠️ 모의투자 환경에서는 지원하지 않습니다 (return_code: 20).
+        모의투자에서는 kt00004 (get_account_evaluation)를 사용하세요.
+
+        Args:
+            exchange: 거래소 구분 ("KRX", "NXT", "SOR"). 기본값 "KRX".
+
+        Returns:
+            {
+                "summary": {
+                    "deposit": int,               # 예수금
+                    "deposit_d1": int,             # D+1 예수금
+                    "deposit_d2": int,             # D+2 예수금
+                    "orderable_cash": int,         # 주문가능금액
+                    "withdrawable": int,           # 출금가능금액
+                    "unsettled_cash": int,         # 미결제금액
+                    "total_buy_amount": int,       # 총 매입금액
+                    "total_evaluation": int,       # 총 평가금액
+                    "total_pnl": int,              # 총 평가손익
+                    "total_pnl_pct": float,        # 총 손익률
+                    "substitute_amount": int,      # 대용금액
+                    "credit_collateral_rate": float, # 신용담보비율
+                },
+                "holdings": [
+                    {
+                        "code": str,               # 종목코드
+                        "name": str,               # 종목명
+                        "settlement_balance": int,  # 결제잔고
+                        "current_quantity": int,    # 현재잔고
+                        "current_price": int,       # 현재가
+                        "avg_price": int,           # 매입단가
+                        "purchase_amount": int,     # 매입금액
+                        "evaluation": int,          # 평가금액
+                        "pnl_amount": int,          # 평가손익
+                        "pnl_pct": float,           # 손익률
+                        "credit_type": str,         # 신용구분
+                        "loan_date": str,           # 대출일
+                        "expire_date": str,         # 만기일
+                    },
+                    ...
+                ],
+                "raw": dict,  # 원본 응답 (디버깅용)
+            }
+
+        Raises:
+            Exception: 모의투자 환경에서 호출 시 return_code 20 에러
+        """
+        if self.use_mock:
+            raise Exception(
+                "[kt00005] 모의투자에서는 체결잔고를 지원하지 않습니다. "
+                "kt00004 (get_account_evaluation)를 사용하세요."
+            )
+
+        result = self._call_api("kt00005", "/api/dostk/acnt", {
+            "dmst_stex_tp": exchange,
+        })
+
+        def _int(v) -> int:
+            try:
+                return int(v)
+            except (ValueError, TypeError):
+                return 0
+
+        def _float(v) -> float:
+            try:
+                return float(v)
+            except (ValueError, TypeError):
+                return 0.0
+
+        summary = {
+            "deposit": _int(result.get("entr")),
+            "deposit_d1": _int(result.get("entr_d1")),
+            "deposit_d2": _int(result.get("entr_d2")),
+            "orderable_cash": _int(result.get("ord_alowa")),
+            "withdrawable": _int(result.get("pymn_alow_amt")),
+            "unsettled_cash": _int(result.get("ch_uncla")),
+            "total_buy_amount": _int(result.get("stk_buy_tot_amt")),
+            "total_evaluation": _int(result.get("evlt_amt_tot")),
+            "total_pnl": _int(result.get("tot_pl_tot")),
+            "total_pnl_pct": _float(result.get("tot_pl_rt")),
+            "substitute_amount": _int(result.get("repl_amt")),
+            "credit_collateral_rate": _float(result.get("crd_grnt_rt")),
+        }
+
+        holdings = []
+        for s in result.get("stk_cntr_remn", []):
+            holdings.append({
+                "code": s.get("stk_cd", ""),
+                "name": s.get("stk_nm", ""),
+                "settlement_balance": _int(s.get("setl_remn")),
+                "current_quantity": _int(s.get("cur_qty")),
+                "current_price": abs(_int(s.get("cur_prc"))),
+                "avg_price": _int(s.get("buy_uv")),
+                "purchase_amount": _int(s.get("pur_amt")),
+                "evaluation": _int(s.get("evlt_amt")),
+                "pnl_amount": _int(s.get("evltv_prft")),
+                "pnl_pct": _float(s.get("pl_rt")),
+                "credit_type": s.get("crd_tp", ""),
+                "loan_date": s.get("loan_dt", ""),
+                "expire_date": s.get("expr_dt", ""),
+            })
+
+        return {"summary": summary, "holdings": holdings, "raw": result}
+
     def get_asset_summary(self) -> Dict:
         """현재 자산 상태 요약 (kt00004 래핑).
 

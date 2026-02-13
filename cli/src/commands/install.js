@@ -7,7 +7,7 @@ import { mkdir } from 'fs/promises';
 
 import { getMarketplaceConfig, getPluginDependencies } from '../lib/config.js';
 import { installPlugin } from '../lib/installer.js';
-import { getPlatformConfig, PLATFORM_NAMES, DEFAULT_PLATFORM } from '../lib/platforms.js';
+import { getPlatformConfig, getDefaultTargetPath, PLATFORM_NAMES, DEFAULT_PLATFORM } from '../lib/platforms.js';
 import logger from '../utils/logger.js';
 import { resolvePath } from '../utils/fs-utils.js';
 import { t } from '../i18n/index.js';
@@ -21,7 +21,7 @@ export default function installCommand(program) {
     .option('-t, --target <platform>', t('install.optionTarget'), DEFAULT_PLATFORM)
     .option('-f, --force', t('install.optionForce'))
     .option('--all', t('install.optionAll'))
-    .option('--no-common', t('install.optionNoCommon'))
+    .option('--common', t('install.optionCommon'))
     .option('--dry-run', t('install.optionDryRun'))
     .action(async (pluginName, options) => {
       const spinner = ora();
@@ -41,10 +41,10 @@ export default function installCommand(program) {
 
         const platformConfig = getPlatformConfig(platform);
 
-        // Determine installation path
+        // Determine installation path (global platforms default to $HOME)
         const targetPath = options.path
           ? resolvePath(options.path)
-          : process.cwd();
+          : getDefaultTargetPath(platform);
         const baseDir = join(targetPath, platformConfig.dir);
 
         // Show platform info for non-default platforms
@@ -101,8 +101,8 @@ export default function installCommand(program) {
 
           pluginsToInstall = [plugin];
 
-          // Add common dependency if needed
-          if (options.common !== false && pluginName !== 'common') {
+          // Add common dependency only when explicitly requested with --common
+          if (options.common === true && pluginName !== 'common') {
             const deps = getPluginDependencies(pluginName, config);
             pluginsToInstall = [...deps, ...pluginsToInstall];
           }
@@ -258,6 +258,7 @@ export default function installCommand(program) {
           antigravity: 'antigravity',
           codex: 'codex --help',
           opencode: 'opencode --help',
+          openclaw: 'openclaw --help',
           agents: 'claude --help',
         };
         const hintCmd = cliCommands[platform] || 'claude --help';

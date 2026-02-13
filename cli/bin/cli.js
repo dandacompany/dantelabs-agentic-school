@@ -67,6 +67,9 @@ ${chalk.bold(t('cli.examples'))}
   $ npx dantelabs-agentic-school sample marketing
   $ npx dantelabs-agentic-school sample --all
 
+  ${chalk.gray('# Install for OpenClaw (~/.openclaw/skills/)')}
+  $ npx dantelabs-agentic-school install trading-tools -t openclaw
+
   ${chalk.gray('# Korean language')}
   $ npx dantelabs-agentic-school --lang ko list
 
